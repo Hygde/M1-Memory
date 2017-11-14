@@ -13,10 +13,25 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     // Declaration des images
     private Bitmap 		block;
+    private Bitmap 		batman;
+    private Bitmap 		firefox;
+    private Bitmap 		hidden_discovered;
+    private Bitmap 		hidden_undiscovered;
+    private Bitmap 		holidays;
+    private Bitmap 		kiss;
+    private Bitmap 		mortal;
+    private Bitmap 		msn;
+    private Bitmap 		pinky;
+    private Bitmap 		puma;
+    private Bitmap 		un;
+
     private Bitmap[] 	zone = new Bitmap[4];
     private Bitmap 		win;
 
@@ -31,20 +46,27 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     int        carteTopAnchor;                   // coordonn�es en Y du point d'ancrage de notre carte
     int        carteLeftAnchor;                  // coordonn�es en X du point d'ancrage de notre carte
 
+    // TODO : redefine the size of the map
     // taille de la carte
     static final int    carteWidth    = 10;
     static final int    carteHeight   = 10;
     static final int    carteTileSize = 20;
 
-    // constante modelisant les differentes types de cases
+    // constantes modelisant les differentes types de cases
+    ArrayList<String> iconList = new ArrayList<String>();
+
+    // tableau de reference du jeu
+    String[][] panel = new String[4][5];
+
+    // TODO : remove
     static final int    CST_block     = 0;
     static final int    CST_diamant   = 1;
     static final int    CST_perso     = 2;
     static final int    CST_zone      = 3;
     static final int    CST_vide      = 4;
 
-    // tableau de reference du terrain
-    int [][] ref    = {
+    // TODO : remove (variables begenning with _ are old one, which we shall remove once ce project is done)
+    int [][] _ref = {
             {CST_vide, CST_block, CST_block,CST_block, CST_block, CST_block, CST_block, CST_block, CST_block, CST_vide},
             {CST_block, CST_block, CST_block,CST_vide, CST_vide, CST_vide, CST_vide, CST_block, CST_block, CST_block},
             {CST_block, CST_vide, CST_vide,CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_block},
@@ -57,6 +79,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             {CST_vide, CST_block, CST_block,CST_block, CST_block, CST_block, CST_block, CST_block, CST_block, CST_vide}
     };
 
+    // TODO : remove
     // position de reference des diamants
     int [][] refdiamants   = {
             {2, 3},
@@ -65,7 +88,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             {6, 6}
     };
 
-
+    // TODO : remove
     // position courante des diamants
     int [][] diamants   = {
             {2, 3},
@@ -74,12 +97,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             {6, 6}
     };
 
-
+    // TODO : remove
     /* compteur et max pour animer les zones d'arriv?e des diamants */
     int currentStepZone = 0;
     int maxStepZone     = 4;
 
-    // thread utiliser pour animer les zones de depot des diamants
+    // thread utilisé pour animer les zones de depot des diamants
     private     boolean in      = true;
     private     Thread  cv_thread;
     SurfaceHolder holder;
@@ -95,6 +118,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public GameSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        setIconList();
+        setPanel();
 
         // permet d'ecouter les surfaceChanged, surfaceCreated, surfaceDestroyed
         holder = getHolder();
@@ -113,16 +138,43 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         cv_thread   = new Thread(this);
         // prise de focus pour gestion des touches
         setFocusable(true);
+    }
 
+    // filling the iconList with all the names
+    public void setIconList() {
+        this.iconList.add("batman");
+        this.iconList.add("firefox");
+        this.iconList.add("holidays");
+        this.iconList.add("kiss");
+        this.iconList.add("mortal");
+        this.iconList.add("msn");
+        this.iconList.add("pinky");
+        this.iconList.add("puma");
+        this.iconList.add("un");
+    }
 
+    // Filling the panel with random icons
+    public void setPanel() {
 
+        // we need to duplicate 2 identic lists to represent the pairs
+        ArrayList<String> randomList = iconList;
+        randomList.addAll(iconList);
+        Collections.shuffle(randomList);
+
+        for(int i = 0 ; i < panel.length-1 ; i++) {
+            for(int j = 0 ; j < panel[i].length-1 ; j++) {
+                // the list is shuffled : for each turn, we just treat it as a pile
+                panel[i][j] = randomList.get(0);
+                randomList.remove(0);
+            }
+        }
     }
 
     // chargement du niveau a partir du tableau de reference du niveau
     private void loadBoard() {
         for (int i=0; i< carteHeight; i++) {
             for (int j=0; j< carteWidth; j++) {
-                carte[j][i]= ref[j][i];
+                carte[j][i]= _ref[j][i];
             }
         }
     }
@@ -313,8 +365,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 
         if (
-                (x > carteLeftAnchor && x < carteLeftAnchor + ref.length*carteTileSize ) &&
-                        (y > carteTopAnchor && y < carteTopAnchor + ref[0].length*carteTileSize)){
+                (x > carteLeftAnchor && x < carteLeftAnchor + _ref.length*carteTileSize ) &&
+                        (y > carteTopAnchor && y < carteTopAnchor + _ref[0].length*carteTileSize)){
             position[0] = (x/carteTileSize) - (carteLeftAnchor/carteTileSize);
             position[1] = (y/carteTileSize) - (carteTopAnchor/carteTileSize);
         }
