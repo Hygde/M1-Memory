@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    public void toast(String input) {
+    public void debug_toast(String input) {
         Context context = getApplicationContext();
         CharSequence text = input;
         int duration = Toast.LENGTH_SHORT;

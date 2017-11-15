@@ -48,8 +48,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     String[][] panel = new String[5][4];
     int panelTopAnchor;
     int panelLeftAnchor;
-    static final int    panelWidth    = 10;
-    static final int    panelHeight   = 10;
+    static final int    panelWidth    = 4;
+    static final int    panelHeight   = 5;
     static final int    panelTileSize = 20;
 
 
@@ -127,11 +127,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public GameSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        // Setting up the virtual panel
-        setIconList();
-        setPanel();
-
-
         // permet d'ecouter les surfaceChanged, surfaceCreated, surfaceDestroyed
         holder = getHolder();
         holder.addCallback(this);
@@ -184,18 +179,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     // chargement du niveau a partir du tableau de reference du niveau
     private void loadBoard() {
-
         for (int i=0; i< carteHeight; i++) {
             for (int j=0; j< carteWidth; j++) {
                 carte[j][i]= _ref[j][i];
             }
         }
-        for (int i=0; i< carteHeight; i++) {
-            for (int j=0; j< carteWidth; j++) {
-                carte[j][i]= _ref[j][i];
-            }
-        }
-
     }
 
     // initialisation du jeu
@@ -210,15 +198,25 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeWidth(3);
         paint.setTextAlign(Paint.Align.LEFT);
+
+        // Setting up the virtual panel
+        setIconList();
+        setPanel();
+        panelTopAnchor  = (getHeight()- panelHeight*panelTileSize)/2;
+        panelLeftAnchor = (getWidth()- panelWidth*panelTileSize)/2;
+
+        // TODO : remove code below
         carte           = new int[carteHeight][carteWidth];
         loadBoard();
         carteTopAnchor  = (getHeight()- carteHeight*carteTileSize)/2;
         carteLeftAnchor = (getWidth()- carteWidth*carteTileSize)/2;
-
         for (int i=0; i< 4; i++) {
             diamants[i][1] = refdiamants[i][1];
             diamants[i][0] = refdiamants[i][0];
         }
+        // TODO : remove code above
+
+        // Launching the main thread
         if ((cv_thread!=null) && (!cv_thread.isAlive())) {
             cv_thread.start();
             Log.e("-FCT-", "cv_thread.start()");
@@ -230,6 +228,47 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawBitmap(win, carteLeftAnchor+ 3*carteTileSize, carteTopAnchor+ 4*carteTileSize, null);
     }
 
+    // Drawing the panel
+    private void paintPanel(Canvas canvas) {
+        for (int i=0; i< panelHeight; i++) {
+            for (int j=0; j< panelWidth; j++) {
+                switch (panel[i][j]) {
+                    case "batman":
+                        canvas.drawBitmap(batman, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "firefox":
+                        canvas.drawBitmap(firefox, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "holidays":
+                        canvas.drawBitmap(holidays, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "kiss":
+                        canvas.drawBitmap(kiss, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "mortal":
+                        canvas.drawBitmap(mortal, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "msn":
+                        canvas.drawBitmap(msn, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "pig":
+                        canvas.drawBitmap(pig, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "pinky":
+                        canvas.drawBitmap(pinky, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "puma":
+                        canvas.drawBitmap(puma, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                    case "un":
+                        canvas.drawBitmap(un, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        break;
+                }
+            }
+        }
+    }
+
+    //** TODO : remove code below
     // dessin de la carte du jeu
     private void paintcarte(Canvas canvas) {
         for (int i=0; i< carteHeight; i++) {
@@ -241,11 +280,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     case CST_zone:
                         canvas.drawBitmap(zone[currentStepZone],carteLeftAnchor+ j*carteTileSize, carteTopAnchor+ i*carteTileSize, null);
                         break;
-
                 }
             }
         }
     }
+    //** TODO : remove code abode
 
 
     private boolean isWon() {
@@ -259,7 +298,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             paintcarte(canvas);
             paintwin(canvas);
         } else {
-            paintcarte(canvas);
+            paintPanel(canvas);
+            //paintcarte(canvas);
             // todo : paint les autres �l�ments de l'interface
         }
 
@@ -419,7 +459,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     output+=" -"+panel[i][j]+"- ";
                 }
         }
-        Log.i("> PANEL CONTENT > :", output);
+        Log.e("MEMORY : ", "GameSurfaceView.debug_panelCOntent():"+output);
     }
 
 
