@@ -43,24 +43,25 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void toast(String input) {
-        Context context = getApplicationContext();
-        CharSequence text = input;
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-    }
-
     public void launchSettingsActivity(View view) {
         Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
     }
+
     public void launchScoreActivity(View view) {
         //Intent intent = new Intent(this, .class);
         //startActivity(intent);
     }
 
-    public void QuitGame(View view) {
+    public void quitGame(View view) {
         finish();
+    }
+
+    public void debug_toast(String input) {
+        Context context = getApplicationContext();
+        CharSequence text = input;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 }

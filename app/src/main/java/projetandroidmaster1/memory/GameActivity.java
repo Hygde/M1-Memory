@@ -27,12 +27,12 @@ public class GameActivity extends AppCompatActivity {
 
         // recuperation de la vue une fois creee à partir de son id
         gameView = (GameSurfaceView) findViewById(R.id.GameSurfaceView);
-        // rend visible la vue
+        // affiche la vue
         gameView.setVisibility(View.VISIBLE);
 
     }
 
-    public void toast(String input) {
+    public void debug_toast(String input) {
         Context context = getApplicationContext();
         CharSequence text = input;
         int duration = Toast.LENGTH_SHORT;
