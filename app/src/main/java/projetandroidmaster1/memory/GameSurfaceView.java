@@ -50,7 +50,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     int panelLeftAnchor;
     static final int    panelWidth    = 4;
     static final int    panelHeight   = 5;
-    static final int    panelTileSize = 20;
+    static final int    panelSquareSize = 300;
 
 
 
@@ -134,8 +134,23 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // chargement des images
         mContext	= context;
         mRes 		= mContext.getResources();
+        batman      = BitmapFactory.decodeResource(mRes, R.drawable.icon_batman);
+        firefox     = BitmapFactory.decodeResource(mRes, R.drawable.icon_firefox);
+        holidays    = BitmapFactory.decodeResource(mRes, R.drawable.icon_holidays);
+        kiss        = BitmapFactory.decodeResource(mRes, R.drawable.icon_kiss);
+        mortal      = BitmapFactory.decodeResource(mRes, R.drawable.icon_mortal);
+        msn         = BitmapFactory.decodeResource(mRes, R.drawable.icon_msn);
+        pig         = BitmapFactory.decodeResource(mRes, R.drawable.icon_pig);
+        pinky       = BitmapFactory.decodeResource(mRes, R.drawable.icon_pinky);
+        puma        = BitmapFactory.decodeResource(mRes, R.drawable.icon_puma);
+        un          = BitmapFactory.decodeResource(mRes, R.drawable.icon_un);
+        hidden_discovered = BitmapFactory.decodeResource(mRes, R.drawable.icon_hidden_discovered);
+        hidden_undiscovered = BitmapFactory.decodeResource(mRes, R.drawable.icon_hidden_uncovered);
+
+        //** TODO : remove below
         block 		= BitmapFactory.decodeResource(mRes, R.drawable.block);
         win 		= BitmapFactory.decodeResource(mRes, R.drawable.win);
+        //** TODO : remove above
 
         // initialisation des parmametres du jeu
         initparameters();
@@ -202,8 +217,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // Setting up the virtual panel
         setIconList();
         setPanel();
-        panelTopAnchor  = (getHeight()- panelHeight*panelTileSize)/2;
-        panelLeftAnchor = (getWidth()- panelWidth*panelTileSize)/2;
+        panelTopAnchor  = (getHeight()- panelHeight* panelSquareSize)/2;
+        panelLeftAnchor = (getWidth()- panelWidth* panelSquareSize)/2;
 
         // TODO : remove code below
         carte           = new int[carteHeight][carteWidth];
@@ -234,34 +249,34 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             for (int j=0; j< panelWidth; j++) {
                 switch (panel[i][j]) {
                     case "batman":
-                        canvas.drawBitmap(batman, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(batman, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "firefox":
-                        canvas.drawBitmap(firefox, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(firefox, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "holidays":
-                        canvas.drawBitmap(holidays, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(holidays, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "kiss":
-                        canvas.drawBitmap(kiss, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(kiss, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "mortal":
-                        canvas.drawBitmap(mortal, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(mortal, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "msn":
-                        canvas.drawBitmap(msn, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(msn, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "pig":
-                        canvas.drawBitmap(pig, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(pig, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "pinky":
-                        canvas.drawBitmap(pinky, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(pinky, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "puma":
-                        canvas.drawBitmap(puma, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(puma, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                     case "un":
-                        canvas.drawBitmap(un, panelLeftAnchor + j * panelTileSize, panelTopAnchor + i * panelTileSize, null);
+                        canvas.drawBitmap(un, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
                         break;
                 }
             }
@@ -291,33 +306,34 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return true;
     }
 
-    // dessin du jeu (fond uni, en fonction du jeu gagne ou pas dessin du plateau et du joueur des diamants et des fleches)
+    // Drawing the game
     private void nDraw(Canvas canvas) {
         canvas.drawRGB(44,44,44);
-        if (isWon()) {
+        paintPanel(canvas);
+
+        /*if (isWon()) {
             paintcarte(canvas);
             paintwin(canvas);
         } else {
-            paintPanel(canvas);
             //paintcarte(canvas);
             // todo : paint les autres �l�ments de l'interface
-        }
+        }*/
 
     }
 
     // callback sur le cycle de vie de la surfaceview
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.i("-> FCT <-", "surfaceChanged "+ width +" - "+ height);
+        //Log.i("-> FCT <-", "surfaceChanged "+ width +" - "+ height);
         initparameters();
     }
 
     public void surfaceCreated(SurfaceHolder arg0) {
-        Log.i("-> FCT <-", "surfaceCreated");
+        //Log.i("-> FCT <-", "surfaceCreated");
     }
 
 
     public void surfaceDestroyed(SurfaceHolder arg0) {
-        Log.i("-> FCT <-", "surfaceDestroyed");
+        //Log.i("-> FCT <-", "surfaceDestroyed");
     }
 
     /**
@@ -343,8 +359,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             } catch(Exception e) {
                 // ERREUR
                 // on entre dans le catch quand la boucle tente d'endormir le thread principal : l'erreur s'affiche puisqu'il n'existe plus. Solution : sortir de la boucle
+                Log.e("-> RUN <-", "PB DANS RUN");
                 break;
-                //Log.e("-> RUN <-", "PB DANS RUN");
             }
         }
     }
