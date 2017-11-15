@@ -4,4 +4,6 @@
     <string name="button_setting">Settings</string>
     <string name="button_score">Score</string>
     <string name="button_quit">Exit</string>
+
+    <string name="activitysetting_textviewsound">Sound volume</string>
 </resources>
