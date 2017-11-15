@@ -52,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchSettingsActivity(View view) {
-        Intent intent = new Intent(this, GameActivity.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
     public void launchScoreActivity(View view) {
-        //Intent intent = new Intent(this, .class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, ScoreActivity.class);
+        startActivity(intent);
     }
 
     public void QuitGame(View view) {

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Memory</string>
+    <string name="button_play">Play</string>
+    <string name="button_setting">Settings</string>
+    <string name="button_score">Score</string>
+    <string name="button_quit">Exit</string>
 </resources>
