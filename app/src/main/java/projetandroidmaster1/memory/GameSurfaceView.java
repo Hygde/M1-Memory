@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap 		kiss;
     private Bitmap 		mortal;
     private Bitmap 		msn;
+    private Bitmap 		pig;
     private Bitmap 		pinky;
     private Bitmap 		puma;
     private Bitmap 		un;
@@ -39,24 +41,31 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Resources 	mRes;
     private Context 	mContext;
 
+    // constantes modelisant les differentes types de cases
+    ArrayList<String> iconList = new ArrayList<String>();
+
+    // tableau de reference du jeu
+    String[][] panel = new String[5][4];
+    int panelTopAnchor;
+    int panelLeftAnchor;
+    static final int    panelWidth    = 10;
+    static final int    panelHeight   = 10;
+    static final int    panelTileSize = 20;
+
+
+
+    /************* TODO : Sokoban code to remove *************/
     // tableau modelisant la carte du jeu
     int[][] carte;
-
     // ancres pour pouvoir centrer la carte du jeu
     int        carteTopAnchor;                   // coordonn�es en Y du point d'ancrage de notre carte
-    int        carteLeftAnchor;                  // coordonn�es en X du point d'ancrage de notre carte
 
+    int        carteLeftAnchor;                  // coordonn�es en X du point d'ancrage de notre carte
     // TODO : redefine the size of the map
     // taille de la carte
     static final int    carteWidth    = 10;
     static final int    carteHeight   = 10;
     static final int    carteTileSize = 20;
-
-    // constantes modelisant les differentes types de cases
-    ArrayList<String> iconList = new ArrayList<String>();
-
-    // tableau de reference du jeu
-    String[][] panel = new String[4][5];
 
     // TODO : remove
     static final int    CST_block     = 0;
@@ -118,8 +127,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public GameSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        // Setting up the virtual panel
         setIconList();
         setPanel();
+
 
         // permet d'ecouter les surfaceChanged, surfaceCreated, surfaceDestroyed
         holder = getHolder();
@@ -148,6 +159,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         this.iconList.add("kiss");
         this.iconList.add("mortal");
         this.iconList.add("msn");
+        this.iconList.add("pig");
         this.iconList.add("pinky");
         this.iconList.add("puma");
         this.iconList.add("un");
@@ -161,8 +173,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         randomList.addAll(iconList);
         Collections.shuffle(randomList);
 
-        for(int i = 0 ; i < panel.length-1 ; i++) {
-            for(int j = 0 ; j < panel[i].length-1 ; j++) {
+        for(int i = 0 ; i < panel.length ; i++) {
+            for(int j = 0 ; j < panel[i].length ; j++) {
                 // the list is shuffled : for each turn, we just treat it as a pile
                 panel[i][j] = randomList.get(0);
                 randomList.remove(0);
@@ -172,11 +184,18 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     // chargement du niveau a partir du tableau de reference du niveau
     private void loadBoard() {
+
         for (int i=0; i< carteHeight; i++) {
             for (int j=0; j< carteWidth; j++) {
                 carte[j][i]= _ref[j][i];
             }
         }
+        for (int i=0; i< carteHeight; i++) {
+            for (int j=0; j< carteWidth; j++) {
+                carte[j][i]= _ref[j][i];
+            }
+        }
+
     }
 
     // initialisation du jeu
@@ -310,7 +329,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
 
-
     // fonction permettant de recuperer les evenements tactiles
     public boolean onTouchEvent (MotionEvent event) {
 
@@ -380,6 +398,28 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         refdiamants[1] = new int[]{6, 6};
         refdiamants[2] = new int[]{4, 5};
         refdiamants[3] = new int[]{3, 7};
+    }
+
+
+    /** DEBUG FUNCTIONS **/
+
+    public void debug_toast(String input) {
+        //Context context = getApplicationContext();
+        CharSequence text = input;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(mContext, text, duration);
+        toast.show();
+    }
+
+    public void debug_panelContent() {
+        String output = "--- BEGIN ---\n";
+        for (int i = 0 ; i < panel.length ; i++) {
+            output += "\n-- ROW "+i+" --\n";
+                for (int j = 0 ; j < panel[i].length ; j++) {
+                    output+=" -"+panel[i][j]+"- ";
+                }
+        }
+        Log.i("> PANEL CONTENT > :", output);
     }
 
 
