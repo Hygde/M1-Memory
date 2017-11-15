@@ -11,6 +11,13 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     public boolean debug = true;
 
+    private FileManagement FM;
+
+    /***********************************************************************************************
+     * ****************************** Activity Life Circle *****************************************
+     * *********************************************************************************************/
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,6 +25,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
     }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e("Memory : ","onPause()");
+    }
+
+    /***********************************************************************************************
+     * *********************************** functions ******************************************
+     * ********************************************************************************************/
 
     // Called when the player taps the Play button
     public void launchGameActivity(View view) {
@@ -31,5 +49,18 @@ public class MainActivity extends AppCompatActivity {
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    public void launchSettingsActivity(View view) {
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
+    }
+    public void launchScoreActivity(View view) {
+        //Intent intent = new Intent(this, .class);
+        //startActivity(intent);
+    }
+
+    public void QuitGame(View view) {
+        finish();
     }
 }
