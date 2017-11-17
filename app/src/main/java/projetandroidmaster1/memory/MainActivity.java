@@ -1,9 +1,18 @@
 package projetandroidmaster1.memory;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -11,6 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
     public boolean debug = true;
 
     private FileManagement FM;
@@ -25,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*FM = new FileManagement(this);
-        FM.WriteScore("150");
-        ArrayList<Double> test = FM.ReadScoreFile();
-        toast(test.get(0).toString());*/
+        FM = new FileManagement(this);
+        FM.writeScore("150.0");
+        ArrayList<Double> test = FM.readScoreFile();
+        debug_toast(test.get(0).toString());
     }
 
     @Override
@@ -60,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //called when the player taps the quit button
-    public void QuitGame(View view) {
+    public void quitGame(View view) {
         finish();
     }
 

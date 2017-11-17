@@ -2,6 +2,8 @@ package projetandroidmaster1.memory;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,13 +34,13 @@ public class FileManagement {
     //constructor
     public FileManagement(Context ctx){
         this.ctx = ctx;
-        AppSettings = InitFile(ctx, AppSettingsFileName);
-        FScore = InitFile(ctx, ScoreFileName);
-        FGameState = InitFile(ctx, GameStateFile);
+        AppSettings = initFile(ctx, AppSettingsFileName);
+        FScore = initFile(ctx, ScoreFileName);
+        FGameState = initFile(ctx, GameStateFile);
     }
 
     //create file if not exist
-    private File InitFile(Context ctx, String FName){
+    private File initFile(Context ctx, String FName){
         File f;
         try{
             f = new File(ctx.getFilesDir(), FName);
@@ -51,11 +53,11 @@ public class FileManagement {
     }
 
     //Write a line in File
-    private int WriteLn(File file,String str){
+    private int writeLn(File file,String str){
         Log.e("MEMORY : ", "FileManagement.WriteLn() : "+str+" into "+file.getName());
         int result = 0;
         try{
-            FileOutputStream fout = new FileOutputStream(file);
+            FileOutputStream fout = new FileOutputStream(file);//if append then add arg true
             OutputStreamWriter wfout = new OutputStreamWriter(fout);
             BufferedWriter bwfout = new BufferedWriter(wfout);
             bwfout.write(str);
@@ -70,7 +72,8 @@ public class FileManagement {
     }
 
     //Read a file line by line and return it in an arraylist
-    private ArrayList<String>ReadFile(File file){
+    private ArrayList<String>readFile(File file){
+        Log.e("MEMORY : ", "FileManagement.readFile() : "+file.getName());
         ArrayList<String>result = new ArrayList<>();
         try {
             FileInputStream fin = new FileInputStream(file);
@@ -80,42 +83,44 @@ public class FileManagement {
             while((str = brfin.readLine()) != null)result.add(str);
             brfin.close();
         }catch(IOException e){
-            Log.e("MEMORY : ", "FileManagement.ReadLn() : Error while reading file "+file.getName());
+            Log.e("MEMORY : ", "FileManagement.readFile() : Error while reading file "+file.getName());
             result.clear();
         }
         return result;
     }
 
     //write value into FScore
-    public int WriteScore(String score){
+    public int writeScore(String score){
         Log.e("MEMORY : ","FileManagement.WriteScore() : "+score);
-        return WriteLn(FScore,score);
+        return writeLn(FScore,score);
     }
 
     //read FScore
-    public ArrayList<Double> ReadScoreFile(){
+    public ArrayList<Double> readScoreFile(){
         Log.e("MEMORY : ","FileManagement.ReadScoreFile()");
-        ArrayList<Double> result = null;
-        ArrayList<String> temp = ReadFile(FScore);
+        ArrayList<Double> result = new ArrayList();
+        ArrayList<String> temp = readFile(FScore);
+        int i = 0;
         try{
-           for(String str : temp) result.add(Double.valueOf(str));
+           for(i = 0; i < temp.size(); i++) {
+               Log.e("MEMORY : ","FileManagmeent.readScoreFile() : i= "+Integer.toString(i)+" sur "+Integer.toString(temp.size()));
+               result.add(Double.valueOf(temp.get(i)));
+           }
         }catch(NullPointerException e){
-            Log.e("MEMORY : ","FileManagement.ReadScoreFile() : Error while converting str to double");
-            result.clear();
-            result = null;
+            Log.e("MEMORY : ","FileManagement.ReadScoreFile() : Error while converting str to double : "+temp.get(i)+"\nError = "+e.getMessage());
         }
         return result;
     }
 
     //Read FGamestate
-    public int LoadGameState(){
+    public int loadGameState(){
         int result = ERROR;
         Log.e("MEMORY : ","FileManagement.LoadGameState() : Error not yet implemented !");
         return result;
     }
 
     //Save game state in FGamestate
-    public int SaveGameState(int nb_coup, int mat[][]){
+    public int saveGameState(int nb_coup, int mat[][]){
         int result = ERROR;
         Log.e("MEMORY : ","FileManagement.SaveGameState() : Error not yet implemented !");
         return result;
