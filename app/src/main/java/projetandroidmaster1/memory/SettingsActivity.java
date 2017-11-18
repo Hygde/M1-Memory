@@ -5,9 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.SeekBar;
 
+import java.util.HashMap;
+
 public class SettingsActivity extends AppCompatActivity {
 
+    private static final String[] ExistingSettings = {"VOLUME"};
+
     private SeekBar seekBarVolume;
+    private FileManagement FM;
 
     /***********************************************************************************************
      * ****************************** Activity Life Circle *****************************************
@@ -18,6 +23,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
+        FM = new FileManagement(this);
+        initView();
     }
 
     @Override
@@ -25,11 +32,18 @@ public class SettingsActivity extends AppCompatActivity {
         super.onPause();
         Log.e("MEMORY : ","SettingActivity.onPause()");
         int position = seekBarVolume.getProgress();
-        //todo : save into a file this value;
-        //todo : send the new value to the music service
+        FM.saveAppSettings("VOLUME="+String.valueOf((double)position));//save settings when activity onPause()
     }
 
     /***********************************************************************************************
      * *********************************** functions ***********************************************
      * ********************************************************************************************/
+
+    //initialize all the view with parameter of the file
+    private void initView(){
+        HashMap<String,Double>config = FM.readAppSettings(ExistingSettings);
+        if(config.size() > 0){
+            seekBarVolume.setProgress(config.get(ExistingSettings[0]).intValue());
+        }
+    }
 }

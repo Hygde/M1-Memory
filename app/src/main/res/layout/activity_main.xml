@@ -14,7 +14,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="128dp"
         android:onClick="launchGameActivity"
-        android:text="@string/button_play"
+        android:text="@string/MainActivity_button_play"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,8 +27,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/button_setting"
         android:onClick="launchSettingsActivity"
+        android:text="@string/MainActivity_button_setting"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_play" />
@@ -40,8 +40,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/button_score"
         android:onClick="launchScoreActivity"
+        android:text="@string/MainActivity_button_score"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_settings" />
@@ -53,8 +53,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/button_quit"
         android:onClick="quitGame"
+        android:text="@string/MainActivity_button_quit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_score" />

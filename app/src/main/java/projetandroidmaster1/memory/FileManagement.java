@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Created by Samuel on 13/11/2017.
@@ -53,15 +56,14 @@ public class FileManagement {
     }
 
     //Write a line in File
-    private int writeLn(File file,String str){
+    private int writeLn(File file,String str, boolean append){
         Log.e("MEMORY : ", "FileManagement.WriteLn() : "+str+" into "+file.getName());
         int result = 0;
         try{
-            FileOutputStream fout = new FileOutputStream(file);//if append then add arg true
+            FileOutputStream fout = new FileOutputStream(file,append);//if append then add arg true
             OutputStreamWriter wfout = new OutputStreamWriter(fout);
             BufferedWriter bwfout = new BufferedWriter(wfout);
-            bwfout.write(str);
-            bwfout.newLine();
+            bwfout.write(str+"\n");
             bwfout.flush();
             bwfout.close();
         }catch(IOException e){
@@ -79,7 +81,7 @@ public class FileManagement {
             FileInputStream fin = new FileInputStream(file);
             InputStreamReader rfin = new InputStreamReader(fin);
             BufferedReader brfin = new BufferedReader(rfin);
-            String str;
+            String str = "B";
             while((str = brfin.readLine()) != null)result.add(str);
             brfin.close();
         }catch(IOException e){
@@ -90,9 +92,18 @@ public class FileManagement {
     }
 
     //write value into FScore
-    public int writeScore(String score){
+    public int saveScore(Double score){
         Log.e("MEMORY : ","FileManagement.WriteScore() : "+score);
-        return writeLn(FScore,score);
+        int result = 0;
+        ArrayList<Double> tmp = readScoreFile();
+        if(!tmp.contains(score))tmp.add(score);
+        Collections.sort(tmp);
+        Collections.reverse(tmp);
+        result = writeLn(FScore,tmp.get(0).toString(),false);
+        for(int i = 1; (i<10) && (i < tmp.size()); i++){
+            if(writeLn(FScore,tmp.get(i).toString(),true) != 0) result = ERROR;
+        }
+        return result;
     }
 
     //read FScore
@@ -100,10 +111,10 @@ public class FileManagement {
         Log.e("MEMORY : ","FileManagement.ReadScoreFile()");
         ArrayList<Double> result = new ArrayList();
         ArrayList<String> temp = readFile(FScore);
+        Toast.makeText(ctx,"NB_ITEM_READ = "+Integer.toString(temp.size()),Toast.LENGTH_SHORT).show();
         int i = 0;
         try{
            for(i = 0; i < temp.size(); i++) {
-               Log.e("MEMORY : ","FileManagmeent.readScoreFile() : i= "+Integer.toString(i)+" sur "+Integer.toString(temp.size()));
                result.add(Double.valueOf(temp.get(i)));
            }
         }catch(NullPointerException e){
@@ -113,7 +124,7 @@ public class FileManagement {
     }
 
     //Read FGamestate
-    public int loadGameState(){
+    public int readGameState(){
         int result = ERROR;
         Log.e("MEMORY : ","FileManagement.LoadGameState() : Error not yet implemented !");
         return result;
@@ -123,6 +134,24 @@ public class FileManagement {
     public int saveGameState(int nb_coup, int mat[][]){
         int result = ERROR;
         Log.e("MEMORY : ","FileManagement.SaveGameState() : Error not yet implemented !");
+        return result;
+    }
+
+    //Save the app settings
+    public int saveAppSettings(String settings){
+        Log.e("MEMORY : ", "FileManagement.saveAppSettings()");
+        return writeLn(AppSettings, settings, false);
+    }
+
+    //return settings of the app
+    public HashMap<String,Double> readAppSettings(String[] Settings){
+        HashMap<String,Double> result = new HashMap();
+        ArrayList<String>config = new ArrayList();
+        config = readFile(AppSettings);
+        for(String str : config){
+            String tmp[] = str.split("=");
+            result.put(tmp[0],Double.valueOf(tmp[1]));
+        }
         return result;
     }
 }

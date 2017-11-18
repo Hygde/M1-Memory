@@ -36,9 +36,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FM = new FileManagement(this);
-        FM.writeScore("150.0");
-        ArrayList<Double> test = FM.readScoreFile();
-        debug_toast(test.get(0).toString());
     }
 
     @Override

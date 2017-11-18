@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Memory</string>
-    <string name="button_play">Play</string>
-    <string name="button_setting">Settings</string>
-    <string name="button_score">Score</string>
-    <string name="button_quit">Exit</string>
 
-    <string name="activitysetting_textviewsound">Sound volume</string>
+    <string name="MainActivity_button_play">Play</string>
+    <string name="MainActivity_button_setting">Settings</string>
+    <string name="MainActivity_button_score">Score</string>
+    <string name="MainActivity_button_quit">Exit</string>
+
+    <string name="SettingsActivity_textview_sound">Sound volume</string>
+
+    <string name="ScoreAcitivty_textview_score">List of the 10 best scores</string>
 </resources>
