@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
@@ -45,12 +46,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     ArrayList<String> iconList = new ArrayList<String>();
 
     // tableau de reference du jeu
-    String[][] panel = new String[5][4];
+    String[][] panel = new String[5][4];                // our reftab used to place the icons.
+    String[][] tempPanel = new String[5][4];
+    boolean[][] discoveredIcons = new boolean[5][4];    // using this table to know if the icons have been discovered
     int panelTopAnchor;
     int panelLeftAnchor;
     static final int    panelWidth    = 4;
     static final int    panelHeight   = 5;
-    static final int    panelSquareSize = 300;
+    static final int    panelSquareSize = 280;
 
 
 
@@ -217,6 +220,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // Setting up the virtual panel
         setIconList();
         setPanel();
+        //Arrays.fill(tempPanel, "hidden_undiscovered");
         panelTopAnchor  = (getHeight()- panelHeight* panelSquareSize)/2;
         panelLeftAnchor = (getWidth()- panelWidth* panelSquareSize)/2;
 
@@ -247,40 +251,62 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private void paintPanel(Canvas canvas) {
         for (int i=0; i< panelHeight; i++) {
             for (int j=0; j< panelWidth; j++) {
-                switch (panel[i][j]) {
-                    case "batman":
-                        canvas.drawBitmap(batman, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "firefox":
-                        canvas.drawBitmap(firefox, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "holidays":
-                        canvas.drawBitmap(holidays, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "kiss":
-                        canvas.drawBitmap(kiss, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "mortal":
-                        canvas.drawBitmap(mortal, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "msn":
-                        canvas.drawBitmap(msn, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "pig":
-                        canvas.drawBitmap(pig, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "pinky":
-                        canvas.drawBitmap(pinky, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "puma":
-                        canvas.drawBitmap(puma, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                    case "un":
-                        canvas.drawBitmap(un, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
-                        break;
-                }
+                drawIcon(canvas, panel[i][j], i, j);
+
             }
         }
+    }
+
+    // This function hides all the cards
+    private void hidePanel(Canvas canvas) {
+        canvas.drawRGB(44,44,44);
+        for (int i=0; i< panelHeight; i++) {
+            for (int j = 0; j < panelWidth; j++) {
+                drawIcon(canvas, "hidden_undiscovered", i, j);
+            }
+        }
+    }
+
+    private void drawIcon(Canvas canvas, String icon, int i, int j) {
+        switch (icon) {
+            case "batman":
+                canvas.drawBitmap(batman, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "firefox":
+                canvas.drawBitmap(firefox, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "holidays":
+                canvas.drawBitmap(holidays, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "kiss":
+                canvas.drawBitmap(kiss, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "mortal":
+                canvas.drawBitmap(mortal, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "msn":
+                canvas.drawBitmap(msn, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "pig":
+                canvas.drawBitmap(pig, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "pinky":
+                canvas.drawBitmap(pinky, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "puma":
+                canvas.drawBitmap(puma, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "un":
+                canvas.drawBitmap(un, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "hidden_undiscovered":
+                canvas.drawBitmap(hidden_undiscovered, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+            case "hidden_discovered":
+                canvas.drawBitmap(hidden_undiscovered, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                break;
+        }
+
     }
 
     //** TODO : remove code below
@@ -331,7 +357,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         //Log.i("-> FCT <-", "surfaceCreated");
     }
 
-
     public void surfaceDestroyed(SurfaceHolder arg0) {
         //Log.i("-> FCT <-", "surfaceDestroyed");
     }
@@ -343,14 +368,29 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void run() {
         Canvas c = null;
 
+        // The panel is revealed during 5 seconds, then the images hide
+        try {
+            try {
+                c = holder.lockCanvas(null);
+                nDraw(c);
+            }
+            catch(Exception e) {}
+            finally {
+                holder.unlockCanvasAndPost(c);
+            }
+            cv_thread.sleep(5000);
+        }
+        catch(Exception e) {}
+
+        // MAIN GAME LOOP
         while (in) {
             try {
                 // PAUSE
                 cv_thread.sleep(40); // on doit endormir le thread pour limiter le nombre d'images par seconde
-                currentStepZone = (currentStepZone + 1) % maxStepZone;
+                //currentStepZone = (currentStepZone + 1) % maxStepZone;
                 try {
                     c = holder.lockCanvas(null);
-                    nDraw(c);
+                    hidePanel(c);
                 } finally {
                     if (c != null) {
                         holder.unlockCanvasAndPost(c);
@@ -393,11 +433,32 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             initparameters();
         }
 
+        // When an icon is touched : reveal it
+        // Get the icon position
+        int iconPosition[] = getIconPosition(event);
+        Canvas c = null;
+        try {
+            try {
+                c = holder.lockCanvas(null);
+                drawIcon(
+                        c,
+                        panel[iconPosition[0]][iconPosition[1]],
+                        iconPosition[1],
+                        iconPosition[0]
+                );
+            }
+            catch(Exception e) {}
+            finally {
+                holder.unlockCanvasAndPost(c);
+            }
+            cv_thread.sleep(2000);
+        }
+        catch(Exception e) {}
 
-        getTouchPosition(event);
+
 
         Log.i("-> FCT <-", "onTouchEvent: "+ event.getX());
-        if (event.getY()<50) {
+        /*if (event.getY()<50) {
             onKeyDown(KeyEvent.KEYCODE_DPAD_UP, null);
         } else if (event.getY()>getHeight()-50) {
             if (event.getX()>getWidth()-50) {
@@ -409,7 +470,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             onKeyDown(KeyEvent.KEYCODE_DPAD_LEFT, null);
         } else if (event.getX()>getWidth()-50) {
             onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, null);
-        }
+        }*/
         return super.onTouchEvent(event);
     }
 
@@ -432,21 +493,19 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return false;
     }
 
-    private int[] getTouchPosition(MotionEvent event){
+    private int[] getIconPosition(MotionEvent event){
         int position[] = new int[2];
         int x = (int)event.getX();
         int y = (int)event.getY();
 
-
         if (
-                (x > carteLeftAnchor && x < carteLeftAnchor + _ref.length*carteTileSize ) &&
-                        (y > carteTopAnchor && y < carteTopAnchor + _ref[0].length*carteTileSize)){
-            position[0] = (x/carteTileSize) - (carteLeftAnchor/carteTileSize);
-            position[1] = (y/carteTileSize) - (carteTopAnchor/carteTileSize);
+                (x > panelLeftAnchor && x < panelLeftAnchor + panel[0].length*panelSquareSize ) &&
+                        (y > panelTopAnchor && y < panelTopAnchor + panel.length*panelSquareSize)){
+            position[0] = (x/panelSquareSize) - (panelLeftAnchor/panelSquareSize);
+            position[1] = (y/panelSquareSize) - (panelTopAnchor/panelSquareSize);
         }
         Log.i("====> Position :", "x= "+Integer.toString(position[0])+" y= "+Integer.toString(position[1]));
         return position;
-
     }
 
     public void setLevel2() {
