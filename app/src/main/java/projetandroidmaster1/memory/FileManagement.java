@@ -72,7 +72,7 @@ public class FileManagement {
     }
 
     //Read a file line by line and return it in an arraylist
-    private ArrayList<String>readFile(File file){
+    private static ArrayList<String>readFile(File file){
         Log.e("MEMORY : ", "FileManagement.readFile() : "+file.getName());
         ArrayList<String>result = new ArrayList<>();
         try {
@@ -122,16 +122,33 @@ public class FileManagement {
     }
 
     //Read FGamestate
-    public int readGameState(){
-        int result = ERROR;
-        Log.e("MEMORY : ","FileManagement.LoadGameState() : Error not yet implemented !");
+    public static int readGameState(int nb_coup, int [][] mat){
+        int result = 0;
+        Log.e("MEMORY : ","FileManagement.readGameState()");
+        ArrayList<String> tmp = readFile(FGameState);
+        if(tmp.size() > 1){
+            nb_coup = Integer.valueOf(tmp.get(0).split("=")[1]);
+            tmp.remove(0);
+            for(int i = 0; i < tmp.size(); i++){
+                String values[] = tmp.get(i).split(";");
+                for(int j = 0; j < values.length; j++)mat[i][j] = Integer.valueOf(values[j]);
+            }
+        }
         return result;
     }
 
     //Save game state in FGamestate
     public int saveGameState(int nb_coup, int mat[][]){
-        int result = ERROR;
-        Log.e("MEMORY : ","FileManagement.SaveGameState() : Error not yet implemented !");
+        int result = 0;
+        Log.e("MEMORY : ","FileManagement.saveGameState()");
+        writeLn(FGameState,"NB_COUP="+Integer.toString(nb_coup),false);
+        for(int i = 0; i < mat.length; i++){
+            String tmp = "";
+            for(int j = 0; j < mat[0].length; j++){
+                tmp = tmp+Integer.toString(mat[i][j])+";";
+            }
+            writeLn(FGameState,tmp,true);
+        }
         return result;
     }
 

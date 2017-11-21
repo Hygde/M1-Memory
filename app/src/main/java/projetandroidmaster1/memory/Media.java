@@ -17,7 +17,7 @@ public class Media extends Thread {
     }
 
     public void run(){
-        player.start();
+        player.start();//do not be called in UI thread => app not responding
         try {
             Thread.sleep(player.getDuration());
             player.release();
