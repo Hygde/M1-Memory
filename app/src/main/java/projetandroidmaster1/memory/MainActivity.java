@@ -35,9 +35,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FM = new FileManagement(this);
-        Media media = new Media(this);
-        media.start();
     }
 
     @Override
@@ -79,5 +76,15 @@ public class MainActivity extends AppCompatActivity {
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    private void dbgfunc(int[][] mat){
+        for(int i = 0; i < mat.length; i++){
+            String str = "";
+            for(int j = 0; j < mat[0].length; j++){
+                str =  str + String.valueOf(mat[i][j])+" ";
+            }
+            Log.e("MEMORY : ","MainActivity.dbgfunc() : "+str);
+        }
     }
 }
