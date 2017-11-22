@@ -18,6 +18,14 @@ public class Icon {
         found = false;
     }
 
+    public boolean isRevealed() {
+        return revealed;
+    }
+
+    public void setRevealed(boolean revealed) {
+        this.revealed = revealed;
+    }
+
     public String getName() {
         return name;
     }

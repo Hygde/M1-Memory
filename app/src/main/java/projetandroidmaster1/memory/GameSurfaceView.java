@@ -19,8 +19,7 @@ import java.util.Collections;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
-
-
+    /** VIEW VARIABLES **/
     // Declaration des images
     private Bitmap 		block;
     private Bitmap 		batman;
@@ -39,18 +38,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap[] 	zone = new Bitmap[4];
     private Bitmap 		win;
 
-    // Can the player make interactions with the interface ?
-    private boolean     isTheGameRunning = false;
-
     // Declaration des objets Ressources et Context permettant d'acc�der aux ressources de notre application et de les charger
     private Resources 	mRes;
-    private Context 	mContext;
 
+    private Context 	mContext;
     // constantes modelisant les differentes types de cases
     ArrayList<Icon> iconList = new ArrayList<Icon>();
 
     // tableau de reference du jeu
     Icon[][] truePanel = new Icon[5][4];                // our reftab used to place the icons.
+
     //Icon[][] tempPanel = new String[5][4];
     //boolean[][] discoveredIcons = new boolean[5][4];    // using this table to know if the icons have been discovered
     int panelTopAnchor;
@@ -60,10 +57,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     static final int    panelSquareSize = 280;
 
 
-    // TODO : remove
-    /* compteur et max pour animer les zones d'arriv?e des diamants */
-    int currentStepZone = 0;
-    int maxStepZone     = 4;
+    /** MODEL VARIABLES **/
+    private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
+    private Icon     firstIconRevealed      = null;    // is one icon already revealed ?
 
     // thread utilisé pour animer les zones de depot des diamants
     private     boolean in      = true;
@@ -313,11 +309,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     // fonction permettant de recuperer les evenements tactiles
     public boolean onTouchEvent (MotionEvent event) {
-        boolean firstIconRevealed = false;      // to know if we already revealed one icon
 
         // When an icon is touched during the game : reveal it
+        Canvas c = null;
         if (isTheGameRunning) {
-            Canvas c = null;
             int iconPosition[] = getIconPosition(event);
             int x = iconPosition[0];
             int y = iconPosition[1];
@@ -325,26 +320,56 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             //String icon = truePanel[y][x];
             //tempPanel[y][x] = icon;
 
-            if(!firstIconRevealed) {
-                revealFirstIcon(c, truePanel[y][x].name, y, x);
-                firstIconRevealed = true;
+            // In every case, revealing the icon
+            truePanel[y][x].setDiscovered(true);
+            truePanel[y][x].setRevealed(true);
+
+            drawHiddenPanel(c);
+            // No icon revealed
+            if(firstIconRevealed == null) {
+                firstIconRevealed = truePanel[y][x];
             }
             // if one icon is already waiting for a match
             else {
-                //revealSecondIcond(c, icon, y, x);
-                firstIconRevealed = false;
+                // is it a match ?
+                if (firstIconRevealed.getName() == truePanel[y][x].getName()) {
+                    firstIconRevealed.setFound(true);
+                    truePanel[y][x].setFound(true);
+                }
+                // if not, hiding the icons
+                else {
+                    firstIconRevealed.setRevealed(false);
+                    truePanel[y][x].setRevealed(false);
+                    try {
+                        cv_thread.sleep(2000);
+                        drawHiddenPanel(c);
+                    } catch(Exception e){}
+                }
+                firstIconRevealed = null;
             }
         }
 
         return super.onTouchEvent(event);
     }
 
+    public void drawHiddenPanel(Canvas c) {
+        // Hiding the panel and launching the game
+        try {
+            c = holder.lockCanvas(null);
+            drawPanel(c, "hide");
+        } finally {
+            if (c != null) {
+                holder.unlockCanvasAndPost(c);
+            }
+        }
+    }
 
     /**
      * run (run du thread cree)
      * on endort le thread, on modifie le compteur d'animation, on prend la main pour dessiner et on dessine puis on lib?re le canvas
      */
     public void run() {
+
         Canvas c = null;
 
         // The truePanel is revealed during 5 seconds, then the images hide
@@ -361,19 +386,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         catch(Exception e) {}
 
-        // Hiding the panel and launching the game
-        try {
-            c = holder.lockCanvas(null);
-            drawPanel(c, "hide");
-        } finally {
-            if (c != null) {
-                holder.unlockCanvasAndPost(c);
-            }
-        }
         isTheGameRunning = true;
+        drawHiddenPanel(c);
+        debug_truePanelContent();
 
         // MAIN GAME LOOP
-        while (in) {
+        /*while (isTheGameRunning) {
             try {
                 // PAUSE
                 //cv_thread.sleep(40); // on doit endormir le thread pour limiter le nombre d'images par seconde
@@ -384,7 +402,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 //Log.e("-> RUN <-", "PB DANS RUN");
                 break;
             }
-        }
+        }*/
     }
 
     // filling the iconList with all the names
@@ -413,57 +431,17 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     // Filling the truePanel with random icons
     public void setTruePanel() {
-
         // we need to duplicate 2 identic lists to represent the pairs
-        ArrayList<Icon> randomList = iconList;
-        randomList.addAll(iconList);
-        Collections.shuffle(randomList);
+        ArrayList<Icon> tempIconList = iconList;
+        Collections.shuffle(tempIconList);
 
         for(int i = 0; i < truePanel.length ; i++) {
             for(int j = 0; j < truePanel[i].length ; j++) {
                 // the list is shuffled : for each turn, we just treat it as a pile
-                truePanel[i][j] = randomList.get(0);
-                randomList.remove(0);
+                truePanel[i][j] = tempIconList.get(0);
+                tempIconList.remove(0);
             }
         }
-    }
-
-    // verification que nous sommes dans le tableau
-    private boolean IsOut(int x, int y) {
-        if ((x < 0) || (x > carteWidth- 1)) {
-            return true;
-        }
-        if ((y < 0) || (y > carteHeight- 1)) {
-            return true;
-        }
-        return false;
-    }
-
-    //controle de la valeur d'une cellule
-    private boolean IsCell(int x, int y, int mask) {
-        if (carte[y][x] == mask) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isWinBitmapTouched(MotionEvent event) {
-        // Launching the second level when touching the "win" Bitmap
-        if (event.getAction() == MotionEvent.ACTION_DOWN){
-            float x = event.getX();
-            float y = event.getY();
-            int carteLeftBoard = carteLeftAnchor + 3*carteTileSize;
-            int carteRightBoard = carteLeftAnchor + 3*carteTileSize + 80;
-            int carteBottomBoard = carteTopAnchor + 4 * carteTileSize;
-            int carteTopBoard = carteTopAnchor + 4 * carteTileSize + 40;
-
-            if((x >= carteLeftBoard && x <= carteRightBoard) && (y >= carteBottomBoard && y <= carteTopBoard)) {
-                return true;
-            }
-            //Log.i("=== TESTY TOUCH", "Touch coordinates : " +
-            //      String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
-        }
-        return false;
     }
 
     private int[] getIconPosition(MotionEvent event){
@@ -480,24 +458,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Log.i("====> Position :", "x= "+Integer.toString(position[0])+" y= "+Integer.toString(position[1]));
         return position;
     }
-
-    public void setLevel2() {
-        refdiamants[0] = new int[]{3, 5};
-        refdiamants[1] = new int[]{6, 6};
-        refdiamants[2] = new int[]{4, 5};
-        refdiamants[3] = new int[]{3, 7};
-    }
-
-    // Fills the temporary panel with hidden_undiscovered icons
-    /*public void setTempPanel() {
-        for(int i = 0; i < tempPanel.length ; i++) {
-            for(int j = 0; j < tempPanel[i].length ; j++) {
-                tempPanel[i][j] = "hidden_undiscovered";
-            }
-        }
-        //debug_tempPanel();
-    }*/
-
 
     private boolean isWon() {
         return true;
@@ -517,8 +477,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         //Log.i("-> FCT <-", "surfaceDestroyed");
     }
 
-    /** DEBUG FUNCTIONS **/
 
+    /** DEBUG FUNCTIONS **/
     public void debug_toast(String input) {
         //Context context = getApplicationContext();
         CharSequence text = input;
@@ -526,7 +486,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Toast toast = Toast.makeText(mContext, text, duration);
         toast.show();
     }
-
 
     public void debug_truePanelContent() {
         String output = "--- BEGIN ---\n";
@@ -538,4 +497,60 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         Log.e("MEMORY : ", "GameSurfaceView.debug_panelCOntent():"+output);
     }
+
+    /** SOKOBAN CODE **/
+    // verification que nous sommes dans le tableau
+    /*private boolean _IsOut(int x, int y) {
+        if ((x < 0) || (x > carteWidth- 1)) {
+            return true;
+        }
+        if ((y < 0) || (y > carteHeight- 1)) {
+            return true;
+        }
+        return false;
+    }*/
+
+    //controle de la valeur d'une cellule
+    /*private boolean IsCell(int x, int y, int mask) {
+        if (carte[y][x] == mask) {
+            return true;
+        }
+        return false;
+    }*/
+    /*public boolean isWinBitmapTouched(MotionEvent event) {
+        // Launching the second level when touching the "win" Bitmap
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+            float x = event.getX();
+            float y = event.getY();
+            int carteLeftBoard = carteLeftAnchor + 3*carteTileSize;
+            int carteRightBoard = carteLeftAnchor + 3*carteTileSize + 80;
+            int carteBottomBoard = carteTopAnchor + 4 * carteTileSize;
+            int carteTopBoard = carteTopAnchor + 4 * carteTileSize + 40;
+
+            if((x >= carteLeftBoard && x <= carteRightBoard) && (y >= carteBottomBoard && y <= carteTopBoard)) {
+                return true;
+            }
+            //Log.i("=== TESTY TOUCH", "Touch coordinates : " +
+            //      String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+        }
+        return false;
+    }*/
+
+    /*public void setLevel2() {
+        refdiamants[0] = new int[]{3, 5};
+        refdiamants[1] = new int[]{6, 6};
+        refdiamants[2] = new int[]{4, 5};
+        refdiamants[3] = new int[]{3, 7};
+    }*/
+
+    // Fills the temporary panel with hidden_undiscovered icons
+    /*public void setTempPanel() {
+        for(int i = 0; i < tempPanel.length ; i++) {
+            for(int j = 0; j < tempPanel[i].length ; j++) {
+                tempPanel[i][j] = "hidden_undiscovered";
+            }
+        }
+        //debug_tempPanel();
+    }*/
+
 }
