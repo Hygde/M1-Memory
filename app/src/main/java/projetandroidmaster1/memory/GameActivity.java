@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 
 public class GameActivity extends AppCompatActivity {
+    private FileManagement FM;
     private GameSurfaceView gameView;
 
     // Oncreate we directly setup the GameSurfaceView, needed to display the game
@@ -22,14 +23,19 @@ public class GameActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
         Intent intent = getIntent();
 
         // recuperation de la vue une fois creee à partir de son id
         gameView = (GameSurfaceView) findViewById(R.id.GameSurfaceView);
         // affiche la vue
         gameView.setVisibility(View.VISIBLE);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        FM = new FileManagement(this);
+        FM.saveGameState(5,gameView.truePanel);
     }
 
     public void debug_toast(String input) {

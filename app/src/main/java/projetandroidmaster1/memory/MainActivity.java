@@ -35,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FM = new FileManagement(this);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        Button btn = (Button)findViewById(R.id.MainActivity_button_play);
+        if(FM.readGameState()!=null)btn.setText(R.string.MainActivity_button_continue);
+        else btn.setText(R.string.MainActivity_button_play);
     }
 
     @Override

@@ -8,7 +8,7 @@
 
     <Button
         android:id="@+id/MainActivity_button_play"
-        android:layout_width="88dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -22,7 +22,7 @@
 
     <Button
         android:id="@+id/MainActivity_button_settings"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -35,7 +35,7 @@
 
     <Button
         android:id="@+id/MainActivity_button_score"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -48,7 +48,7 @@
 
     <Button
         android:id="@+id/button_quit"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"

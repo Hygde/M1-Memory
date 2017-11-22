@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ public class FileManagement {
     }
 
     //Read a file line by line and return it in an arraylist
-    private static ArrayList<String>readFile(File file){
+    private ArrayList<String>readFile(File file){
         Log.e("MEMORY : ", "FileManagement.readFile() : "+file.getName());
         ArrayList<String>result = new ArrayList<>();
         try {
@@ -122,32 +123,46 @@ public class FileManagement {
     }
 
     //Read FGamestate
-    public static int readGameState(int nb_coup, int [][] mat){
-        int result = 0;
+    public Object[] readGameState(){
         Log.e("MEMORY : ","FileManagement.readGameState()");
-        ArrayList<String> tmp = readFile(FGameState);
-        if(tmp.size() > 1){
-            nb_coup = Integer.valueOf(tmp.get(0).split("=")[1]);
-            tmp.remove(0);
-            for(int i = 0; i < tmp.size(); i++){
-                String values[] = tmp.get(i).split(";");
-                for(int j = 0; j < values.length; j++)mat[i][j] = Integer.valueOf(values[j]);
+        Object[] result =  new Object[2];
+        ArrayList<String> databrut = readFile(FGameState);
+
+        Log.e("MEMORY : ", "FileManagement.readGameState() : databrut.size() = "+Integer.toString(databrut.size()));
+
+        if(databrut.size() <= 2) return null;
+
+        Log.e("MEMORY : ", "FileManagement.readGameState() : chargement des données");
+
+        result[0] = Integer.parseInt(databrut.get(0).split("=")[1]);
+        databrut.remove(0);
+
+        Icon[][] mat = new Icon[databrut.size()][databrut.get(0).split(":").length];
+        for(int i = 0; i < mat.length; i++){//rows
+            String[] Icondata = databrut.get(i).split(":");
+            String dbg = "";
+            for(int j =0; j < Icondata.length; j++){//cols
+                String[] values = Icondata[j].split(";");
+                mat[i][j] = new Icon(values[0],Integer.parseInt(values[1]),Boolean.valueOf(values[2]),Boolean.valueOf(values[3]),Boolean.valueOf(values[4]));
+                dbg = dbg + "\t" +mat[i][j].getInfos();
             }
+            Log.e("MEMORY : ","FileMangement.readGameSate() : "+dbg);
         }
+        result[1] = mat;
         return result;
     }
 
     //Save game state in FGamestate
-    public int saveGameState(int nb_coup, int mat[][]){
+    public int saveGameState(int nb_coup, Icon mat[][]){
         int result = 0;
         Log.e("MEMORY : ","FileManagement.saveGameState()");
         writeLn(FGameState,"NB_COUP="+Integer.toString(nb_coup),false);
         for(int i = 0; i < mat.length; i++){
-            String tmp = "";
-            for(int j = 0; j < mat[0].length; j++){
-                tmp = tmp+Integer.toString(mat[i][j])+";";
+            String str = "";
+            for(int j = 0;  j < mat[0].length; j++){
+                str = str + mat[i][j].getInfos();
             }
-            writeLn(FGameState,tmp,true);
+            writeLn(FGameState,str,true);
         }
         return result;
     }

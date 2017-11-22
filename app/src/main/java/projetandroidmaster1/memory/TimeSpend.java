@@ -18,6 +18,7 @@ public class TimeSpend{
     }
 
     public void StartChrono(){chronometer.start();}
+    public void restartChrono(){chronometer.setBase(SystemClock.elapsedRealtime());}
     public long getTimeElapse(){return SystemClock.elapsedRealtime() - chronometer.getBase();}
     public void StopChrono(){chronometer.stop();}
 }

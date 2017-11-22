@@ -18,6 +18,13 @@ public class Icon {
         found = false;
     }
 
+    public Icon(String name, int number, boolean revealed, boolean discovered, boolean found){
+        this.name = name;
+        this.revealed = revealed;
+        this.discovered = discovered;
+        this.found = found;
+    }
+
     public boolean isRevealed() {
         return revealed;
     }
@@ -44,5 +51,9 @@ public class Icon {
 
     public void setFound(boolean found) {
         this.found = found;
+    }
+
+    public String getInfos(){
+        return name + ";" + Integer.toString(number) + ";" + Boolean.toString(revealed) + ";" + Boolean.toString(discovered) +";"+ Boolean.toString(found) + ":";
     }
 }

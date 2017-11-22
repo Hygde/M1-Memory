@@ -2,6 +2,7 @@
     <string name="app_name">Memory</string>
 
     <string name="MainActivity_button_play">Play</string>
+    <string name="MainActivity_button_continue">Continue</string>
     <string name="MainActivity_button_setting">Settings</string>
     <string name="MainActivity_button_score">Score</string>
     <string name="MainActivity_button_quit">Exit</string>
