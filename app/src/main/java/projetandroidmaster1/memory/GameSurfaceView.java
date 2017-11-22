@@ -60,59 +60,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     static final int    panelSquareSize = 280;
 
 
-
-    /************* TODO : Sokoban code to remove *************/
-    // tableau modelisant la carte du jeu
-    int[][] carte;
-    // ancres pour pouvoir centrer la carte du jeu
-    int        carteTopAnchor;                   // coordonn�es en Y du point d'ancrage de notre carte
-
-    int        carteLeftAnchor;                  // coordonn�es en X du point d'ancrage de notre carte
-    // TODO : redefine the size of the map
-    // taille de la carte
-    static final int    carteWidth    = 10;
-    static final int    carteHeight   = 10;
-    static final int    carteTileSize = 20;
-
-    // TODO : remove
-    static final int    CST_block     = 0;
-    static final int    CST_diamant   = 1;
-    static final int    CST_perso     = 2;
-    static final int    CST_zone      = 3;
-    static final int    CST_vide      = 4;
-
-    // TODO : remove (variables begenning with _ are old one, which we shall remove once ce project is done)
-    int [][] _ref = {
-            {CST_vide, CST_block, CST_block,CST_block, CST_block, CST_block, CST_block, CST_block, CST_block, CST_vide},
-            {CST_block, CST_block, CST_block,CST_vide, CST_vide, CST_vide, CST_vide, CST_block, CST_block, CST_block},
-            {CST_block, CST_vide, CST_vide,CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_block},
-            {CST_block, CST_vide, CST_vide, CST_block, CST_vide, CST_vide, CST_block, CST_vide, CST_vide, CST_block},
-            {CST_block, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_block},
-            {CST_block, CST_vide, CST_block, CST_vide, CST_vide, CST_vide, CST_vide, CST_block, CST_vide, CST_block},
-            {CST_block, CST_vide, CST_vide, CST_vide, CST_block, CST_block, CST_vide, CST_vide, CST_vide, CST_block},
-            {CST_block, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_vide, CST_block},
-            {CST_block, CST_block, CST_vide,CST_zone, CST_zone, CST_zone, CST_zone, CST_vide, CST_block, CST_block},
-            {CST_vide, CST_block, CST_block,CST_block, CST_block, CST_block, CST_block, CST_block, CST_block, CST_vide}
-    };
-
-    // TODO : remove
-    // position de reference des diamants
-    int [][] refdiamants   = {
-            {2, 3},
-            {2, 6},
-            {6, 3},
-            {6, 6}
-    };
-
-    // TODO : remove
-    // position courante des diamants
-    int [][] diamants   = {
-            {2, 3},
-            {2, 6},
-            {6, 3},
-            {6, 6}
-    };
-
     // TODO : remove
     /* compteur et max pour animer les zones d'arriv?e des diamants */
     int currentStepZone = 0;
@@ -169,16 +116,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
 
-
-    // chargement du niveau a partir du tableau de reference du niveau
-    private void _loadBoard() {
-        for (int i=0; i< carteHeight; i++) {
-            for (int j=0; j< carteWidth; j++) {
-                carte[j][i]= _ref[j][i];
-            }
-        }
-    }
-
     // initialisation du jeu
     public void initparameters() {
         paint = new Paint();
@@ -199,17 +136,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         panelTopAnchor  = (getHeight()- panelHeight* panelSquareSize)/2;
         panelLeftAnchor = (getWidth()- panelWidth* panelSquareSize)/2;
 
-        // TODO : remove code below
-        carte           = new int[carteHeight][carteWidth];
-        _loadBoard();
-        carteTopAnchor  = (getHeight()- carteHeight*carteTileSize)/2;
-        carteLeftAnchor = (getWidth()- carteWidth*carteTileSize)/2;
-        for (int i=0; i< 4; i++) {
-            diamants[i][1] = refdiamants[i][1];
-            diamants[i][0] = refdiamants[i][0];
-        }
-        // TODO : remove code above
-
         // Launching the main thread
         if ((cv_thread!=null) && (!cv_thread.isAlive())) {
             cv_thread.start();
@@ -219,24 +145,100 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     // dessin du gagne si gagn�
     private void paintwin(Canvas canvas) {
-        canvas.drawBitmap(win, carteLeftAnchor+ 3*carteTileSize, carteTopAnchor+ 4*carteTileSize, null);
+        //canvas.drawBitmap(win, carteLeftAnchor+ 3*carteTileSize, carteTopAnchor+ 4*carteTileSize, null);
     }
 
-    // Drawing the truePanel
-    private void drawTruePanel(Canvas canvas) {
+    // Drawing the Panel
+    private void drawPanel(Canvas canvas, String mode) {
         for (int i=0; i< panelHeight ; i++) {
             for (int j=0; j< panelWidth; j++) {
-                drawOneIcon(canvas, truePanel[i][j].getName(), i, j);
+                drawIcon(canvas, truePanel[i][j], i, j, mode);
             }
         }
     }
 
-    // Render the panel displayed during the game
-    public void drawTempPanel(Canvas canvas) {
-        for(int i = 0 ; i < panelHeight; i++) {
-            for (int j = 0; j < panelWidth ; j++) {
-                // TODO : add a condition : if icon != "hidden_undiscovered", draw "hidden_uncovered"
-                //drawOneIcon(canvas, tempPanel[i][j], i, j);
+    // Draw a single bitmap icon for the tempPanel
+    /* Existing modes :
+        - show (at the beginning of the game)
+        - hide
+     */
+    private void drawIcon(Canvas canvas, Icon icon, int i, int j, String mode) {
+        // If we want to show the panel content OR if the icon is found OR revealed
+        if (mode == "show") {
+            switch (icon.getName()) {
+                case "batman":
+                    canvas.drawBitmap(batman, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "firefox":
+                    canvas.drawBitmap(firefox, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "holidays":
+                    canvas.drawBitmap(holidays, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "kiss":
+                    canvas.drawBitmap(kiss, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "mortal":
+                    canvas.drawBitmap(mortal, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "msn":
+                    canvas.drawBitmap(msn, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "pig":
+                    canvas.drawBitmap(pig, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "pinky":
+                    canvas.drawBitmap(pinky, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "puma":
+                    canvas.drawBitmap(puma, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+                case "un":
+                    canvas.drawBitmap(un, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                    break;
+            }
+        }
+
+        else if (mode == "hide") {
+            if(icon.found || icon.revealed) {
+                switch (icon.getName()) {
+                    case "batman":
+                        canvas.drawBitmap(batman, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "firefox":
+                        canvas.drawBitmap(firefox, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "holidays":
+                        canvas.drawBitmap(holidays, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "kiss":
+                        canvas.drawBitmap(kiss, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "mortal":
+                        canvas.drawBitmap(mortal, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "msn":
+                        canvas.drawBitmap(msn, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "pig":
+                        canvas.drawBitmap(pig, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "pinky":
+                        canvas.drawBitmap(pinky, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "puma":
+                        canvas.drawBitmap(puma, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                    case "un":
+                        canvas.drawBitmap(un, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+                        break;
+                }
+            }
+            else if (icon.isDiscovered()) {
+                canvas.drawBitmap(hidden_discovered, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
+            }
+            else {
+                canvas.drawBitmap(hidden_undiscovered, panelLeftAnchor + j * panelSquareSize, panelTopAnchor + i * panelSquareSize, null);
             }
         }
     }
@@ -309,6 +311,82 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
 
+    // fonction permettant de recuperer les evenements tactiles
+    public boolean onTouchEvent (MotionEvent event) {
+        boolean firstIconRevealed = false;      // to know if we already revealed one icon
+
+        // When an icon is touched during the game : reveal it
+        if (isTheGameRunning) {
+            Canvas c = null;
+            int iconPosition[] = getIconPosition(event);
+            int x = iconPosition[0];
+            int y = iconPosition[1];
+            if (y > 4) y = 4;
+            //String icon = truePanel[y][x];
+            //tempPanel[y][x] = icon;
+
+            if(!firstIconRevealed) {
+                revealFirstIcon(c, truePanel[y][x].name, y, x);
+                firstIconRevealed = true;
+            }
+            // if one icon is already waiting for a match
+            else {
+                //revealSecondIcond(c, icon, y, x);
+                firstIconRevealed = false;
+            }
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+
+    /**
+     * run (run du thread cree)
+     * on endort le thread, on modifie le compteur d'animation, on prend la main pour dessiner et on dessine puis on lib?re le canvas
+     */
+    public void run() {
+        Canvas c = null;
+
+        // The truePanel is revealed during 5 seconds, then the images hide
+        try {
+            try {
+                c = holder.lockCanvas(null);
+                drawPanel(c, "show");
+            }
+            catch(Exception e) {}
+            finally {
+                holder.unlockCanvasAndPost(c);
+            }
+            cv_thread.sleep(2000);      // TODO : change to 5000
+        }
+        catch(Exception e) {}
+
+        // Hiding the panel and launching the game
+        try {
+            c = holder.lockCanvas(null);
+            drawPanel(c, "hide");
+        } finally {
+            if (c != null) {
+                holder.unlockCanvasAndPost(c);
+            }
+        }
+        isTheGameRunning = true;
+
+        // MAIN GAME LOOP
+        while (in) {
+            try {
+                // PAUSE
+                //cv_thread.sleep(40); // on doit endormir le thread pour limiter le nombre d'images par seconde
+                //currentStepZone = (currentStepZone + 1) % maxStepZone;
+            } catch(Exception e) {
+                // ERREUR
+                // on entre dans le catch quand la boucle tente d'endormir le thread principal : l'erreur s'affiche puisqu'il n'existe plus. Solution : sortir de la boucle
+                //Log.e("-> RUN <-", "PB DANS RUN");
+                break;
+            }
+        }
+    }
+
     // filling the iconList with all the names
     public void setIconList() {
         this.iconList.add(new Icon("batman", 1));
@@ -350,114 +428,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    // Fills the temporary panel with hidden_undiscovered icons
-    /*public void setTempPanel() {
-        for(int i = 0; i < tempPanel.length ; i++) {
-            for(int j = 0; j < tempPanel[i].length ; j++) {
-                tempPanel[i][j] = "hidden_undiscovered";
-            }
-        }
-        //debug_tempPanel();
-    }*/
-
-    //** TODO : remove code below
-    // dessin de la carte du jeu
-    private void paintcarte(Canvas canvas) {
-        for (int i=0; i< carteHeight; i++) {
-            for (int j=0; j< carteWidth; j++) {
-                switch (carte[i][j]) {
-                    case CST_block:
-                        canvas.drawBitmap(block, carteLeftAnchor+ j*carteTileSize, carteTopAnchor+ i*carteTileSize, null);
-                        break;
-                    case CST_zone:
-                        canvas.drawBitmap(zone[currentStepZone],carteLeftAnchor+ j*carteTileSize, carteTopAnchor+ i*carteTileSize, null);
-                        break;
-                }
-            }
-        }
-    }
-    //** TODO : remove code abode
-
-    private boolean isWon() {
-        return true;
-    }
-
-    // Drawing the game
-    private void _nDraw(Canvas canvas) {
-        //canvas.drawRGB(44,44,44);
-        drawTruePanel(canvas);
-
-        /*if (isWon()) {
-            paintcarte(canvas);
-            paintwin(canvas);
-        } else {
-            //paintcarte(canvas);
-            // todo : paint les autres �l�ments de l'interface
-        }*/
-
-    }
-
-    // callback sur le cycle de vie de la surfaceview
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        //Log.i("-> FCT <-", "surfaceChanged "+ width +" - "+ height);
-        initparameters();
-    }
-
-    public void surfaceCreated(SurfaceHolder arg0) {
-        //Log.i("-> FCT <-", "surfaceCreated");
-    }
-
-    public void surfaceDestroyed(SurfaceHolder arg0) {
-        //Log.i("-> FCT <-", "surfaceDestroyed");
-    }
-
-    /**
-     * run (run du thread cree)
-     * on endort le thread, on modifie le compteur d'animation, on prend la main pour dessiner et on dessine puis on lib?re le canvas
-     */
-    public void run() {
-        Canvas c = null;
-
-        // The truePanel is revealed during 5 seconds, then the images hide
-        try {
-            try {
-                c = holder.lockCanvas(null);
-                drawTruePanel(c);
-            }
-            catch(Exception e) {}
-            finally {
-                holder.unlockCanvasAndPost(c);
-            }
-            cv_thread.sleep(2000);      // TODO : change to 5000
-        }
-        catch(Exception e) {}
-
-        // Hiding the panel and launching the game
-        try {
-            c = holder.lockCanvas(null);
-            drawTempPanel(c);
-        } finally {
-            if (c != null) {
-                holder.unlockCanvasAndPost(c);
-            }
-        }
-        isTheGameRunning = true;
-
-        // MAIN GAME LOOP
-        while (in) {
-            try {
-                // PAUSE
-                cv_thread.sleep(40); // on doit endormir le thread pour limiter le nombre d'images par seconde
-                //currentStepZone = (currentStepZone + 1) % maxStepZone;
-            } catch(Exception e) {
-                // ERREUR
-                // on entre dans le catch quand la boucle tente d'endormir le thread principal : l'erreur s'affiche puisqu'il n'existe plus. Solution : sortir de la boucle
-                //Log.e("-> RUN <-", "PB DANS RUN");
-                break;
-            }
-        }
-    }
-
     // verification que nous sommes dans le tableau
     private boolean IsOut(int x, int y) {
         if ((x < 0) || (x > carteWidth- 1)) {
@@ -475,56 +445,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             return true;
         }
         return false;
-    }
-
-    // fonction permettant de recuperer les evenements tactiles
-    public boolean onTouchEvent (MotionEvent event) {
-        boolean firstIconRevealed = false;      // to know if we already revealed one icon
-
-        // TODO : remove
-        /*if (isWinBitmapTouched(event) && isWon()) {
-            setLevel2();
-            initparameters();
-        }*/
-
-        // When an icon is touched during the game : reveal it
-        if (isTheGameRunning) {
-            Canvas c = null;
-            int iconPosition[] = getIconPosition(event);
-            int x = iconPosition[0];
-            int y = iconPosition[1];
-            if (y > 4) y = 4;
-            //String icon = truePanel[y][x];
-            //tempPanel[y][x] = icon;
-
-            if(!firstIconRevealed) {
-                revealFirstIcon(c, truePanel[y][x].name, y, x);
-                firstIconRevealed = true;
-            }
-            // if one icon is already waiting for a match
-            else {
-               //revealSecondIcond(c, icon, y, x);
-               firstIconRevealed = false;
-            }
-        }
-
-
-        // TODO : remove
-        //Log.i("-> FCT <-", "onTouchEvent: "+ event.getX());
-        /*if (event.getY()<50) {
-            onKeyDown(KeyEvent.KEYCODE_DPAD_UP, null);
-        } else if (event.getY()>getHeight()-50) {
-            if (event.getX()>getWidth()-50) {
-                onKeyDown(KeyEvent.KEYCODE_0, null);
-            } else {
-                onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, null);
-            }
-        } else if (event.getX()<50) {
-            onKeyDown(KeyEvent.KEYCODE_DPAD_LEFT, null);
-        } else if (event.getX()>getWidth()-50) {
-            onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, null);
-        }*/
-        return super.onTouchEvent(event);
     }
 
     public boolean isWinBitmapTouched(MotionEvent event) {
@@ -568,6 +488,34 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         refdiamants[3] = new int[]{3, 7};
     }
 
+    // Fills the temporary panel with hidden_undiscovered icons
+    /*public void setTempPanel() {
+        for(int i = 0; i < tempPanel.length ; i++) {
+            for(int j = 0; j < tempPanel[i].length ; j++) {
+                tempPanel[i][j] = "hidden_undiscovered";
+            }
+        }
+        //debug_tempPanel();
+    }*/
+
+
+    private boolean isWon() {
+        return true;
+    }
+
+    // callback sur le cycle de vie de la surfaceview
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        //Log.i("-> FCT <-", "surfaceChanged "+ width +" - "+ height);
+        initparameters();
+    }
+
+    public void surfaceCreated(SurfaceHolder arg0) {
+        //Log.i("-> FCT <-", "surfaceCreated");
+    }
+
+    public void surfaceDestroyed(SurfaceHolder arg0) {
+        //Log.i("-> FCT <-", "surfaceDestroyed");
+    }
 
     /** DEBUG FUNCTIONS **/
 
@@ -590,17 +538,4 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         Log.e("MEMORY : ", "GameSurfaceView.debug_panelCOntent():"+output);
     }
-
-    /*public void debug_tempPanel() {
-        String output = "TEMPTAB\n";
-        for (int i = 0 ; i < tempPanel.length ; i++) {
-            output += "\n==ROW "+i+"\n";
-            for (int j = 0 ; j < tempPanel[i].length ; j++) {
-                output += "===ELEM : "+tempPanel[i][j]+" / ";
-            }
-        }
-        Log.e("MEMORY : ", "GameSurfaceView.debug_tempPanel() : "+output);
-    }*/
-
-
 }
