@@ -1,6 +1,8 @@
 package projetandroidmaster1.memory;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -51,15 +54,20 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     //Icon[][] tempPanel = new String[5][4];
     //boolean[][] discoveredIcons = new boolean[5][4];    // using this table to know if the icons have been discovered
     int panelTopAnchor;
+
     int panelLeftAnchor;
     static final int    panelHeight   = 5;
     static final int    panelWidth    = 4;
     static final int    panelSquareSize = 280;
-
-
     /** MODEL VARIABLES **/
     private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
-    private Icon     firstIconRevealed      = null;    // is one icon already revealed ?
+
+
+    private boolean     isTheGameWon        = false;
+    private int         nbTry               = 0;
+    private TimeSpend   time;
+    private Icon        firstIconRevealed   = null;    // is one icon already revealed ?
+
 
     // thread utilisé pour animer les zones de depot des diamants
     private     boolean in      = true;
@@ -96,11 +104,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         un          = BitmapFactory.decodeResource(mRes, R.drawable.icon_un);
         hidden_discovered = BitmapFactory.decodeResource(mRes, R.drawable.icon_hidden_discovered);
         hidden_undiscovered = BitmapFactory.decodeResource(mRes, R.drawable.icon_hidden_uncovered);
-
-        //** TODO : remove below
-        block 		= BitmapFactory.decodeResource(mRes, R.drawable.block);
-        win 		= BitmapFactory.decodeResource(mRes, R.drawable.win);
-        //** TODO : remove above
 
         // initialisation des parmametres du jeu
         initparameters();
@@ -282,31 +285,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
-    private void revealFirstIcon(Canvas canvas, String icon, int x, int y) {
-        // Reveal the icon
-        /*try {
-            try {
-                canvas = holder.lockCanvas(null);
-                for (int i = 0 ; i < tempPanel.length ; i++) {
-                    for (int j = 0 ; j < tempPanel[0].length ; j++) {
-                        drawOneIcon(
-                                canvas,
-                                tempPanel[i][j],
-                                i,
-                                j
-                        );
-                    }
-                }
-            }
-            catch(Exception e) {}
-            finally {
-                holder.unlockCanvasAndPost(canvas);
-            }
-        }
-        catch(Exception e) {}*/
-    }
-
-
     // fonction permettant de recuperer les evenements tactiles
     public boolean onTouchEvent (MotionEvent event) {
 
@@ -331,17 +309,28 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
             // if one icon is already waiting for a match
             else {
+                this.nbTry++;
+
                 // is it a match ?
                 if (firstIconRevealed.getName() == truePanel[y][x].getName()) {
                     firstIconRevealed.setFound(true);
                     truePanel[y][x].setFound(true);
+
+                    // if all icons are found : the game is over
+                    // TODO : replace with if(allFound(truePanel))
+                    if(true) {
+                        time.stopChrono();
+                        Thread.currentThread().interrupt();
+                        cv_thread = null;
+                        ((Activity) mContext).finish();
+                    }
                 }
                 // if not, hiding the icons
                 else {
                     firstIconRevealed.setRevealed(false);
                     truePanel[y][x].setRevealed(false);
                     try {
-                        cv_thread.sleep(2000);
+                        cv_thread.sleep(1000);
                         drawHiddenPanel(c);
                     } catch(Exception e){}
                 }
@@ -389,6 +378,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         isTheGameRunning = true;
         drawHiddenPanel(c);
         debug_truePanelContent();
+        time = new TimeSpend(mContext);
+        time.startChrono();
 
         // MAIN GAME LOOP
         /*while (isTheGameRunning) {
@@ -444,6 +435,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
+    public long getTime() {
+        return this.time.getTimeElapse();
+    }
+
+    public int getNbTry() {
+        return this.nbTry;
+    }
+
     private int[] getIconPosition(MotionEvent event){
         int position[] = new int[2];
         int x = (int)event.getX();
@@ -459,9 +458,25 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return position;
     }
 
+    private boolean allFound(Icon[][] truePanel) {
+        for (int i=0; i< truePanel.length ; i++) {
+            for (int j=0; j< truePanel[i].length ; j++) {
+                if(!truePanel[i][j].isFound())
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private void launchEndgame() {
+        Intent intent = new Intent().setClass(mContext, EndgameActivity.class);
+        ((Activity) mContext).startActivity(intent);
+    }
+
     private boolean isWon() {
         return true;
     }
+
 
     // callback sur le cycle de vie de la surfaceview
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -474,7 +489,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void surfaceDestroyed(SurfaceHolder arg0) {
-        //Log.i("-> FCT <-", "surfaceDestroyed");
+        Log.i("-> FCT <-", "surfaceDestroyed");
+
     }
 
 

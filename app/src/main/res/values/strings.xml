@@ -11,4 +11,8 @@
     <string name="SettingsActivity_switch">ON / OFF</string>
 
     <string name="ScoreAcitivty_textview_score">List of the 10 best scores</string>
+
+    <string name="EndgameActivity_textview_win">You win !</string>
+    <string name="EndgameActivity_textview_time">Time : </string>
+    <string name="EndgameActivity_textview_score">Number of tries : </string>
 </resources>

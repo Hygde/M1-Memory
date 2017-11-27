@@ -48,7 +48,7 @@ public class FileManagement {
             f = new File(ctx.getFilesDir(), FName);
             if(!f.exists())f.createNewFile();
         }catch(IOException e){
-            Log.e("MEMORY : ", "FileManagement.InitFile() : Error while creating "+FName);
+            //Log.e("MEMORY : ", "FileManagement.InitFile() : Error while creating "+FName);
             f = null;
         }
         return f;
@@ -56,7 +56,7 @@ public class FileManagement {
 
     //Write a line in File
     private int writeLn(File file,String str, boolean append){
-        Log.e("MEMORY : ", "FileManagement.WriteLn() : "+str+" into "+file.getName());
+        //Log.e("MEMORY : ", "FileManagement.WriteLn() : "+str+" into "+file.getName());
         int result = 0;
         try{
             FileOutputStream fout = new FileOutputStream(file,append);//if append then add arg true
@@ -66,7 +66,7 @@ public class FileManagement {
             bwfout.flush();
             bwfout.close();
         }catch(IOException e){
-            Log.e("MEMORY : ", "FileManagement.WriteLn() : Error while writing in file "+file.getName());
+            //Log.e("MEMORY : ", "FileManagement.WriteLn() : Error while writing in file "+file.getName());
             result = ERROR;
         }
         return result;
@@ -74,7 +74,7 @@ public class FileManagement {
 
     //Read a file line by line and return it in an arraylist
     private ArrayList<String>readFile(File file){
-        Log.e("MEMORY : ", "FileManagement.readFile() : "+file.getName());
+        //Log.e("MEMORY : ", "FileManagement.readFile() : "+file.getName());
         ArrayList<String>result = new ArrayList<>();
         try {
             FileInputStream fin = new FileInputStream(file);
@@ -84,7 +84,7 @@ public class FileManagement {
             while((str = brfin.readLine()) != null)result.add(str);
             brfin.close();
         }catch(IOException e){
-            Log.e("MEMORY : ", "FileManagement.readFile() : Error while reading file "+file.getName());
+            //Log.e("MEMORY : ", "FileManagement.readFile() : Error while reading file "+file.getName());
             result.clear();
         }
         return result;
@@ -92,7 +92,7 @@ public class FileManagement {
 
     //write value into FScore
     public int saveScore(Double score){
-        Log.e("MEMORY : ","FileManagement.WriteScore() : "+score);
+        //Log.e("MEMORY : ","FileManagement.WriteScore() : "+score);
         int result = 0;
         ArrayList<Double> tmp = readScoreFile();
         if(!tmp.contains(score))tmp.add(score);
@@ -107,7 +107,7 @@ public class FileManagement {
 
     //read FScore
     public ArrayList<Double> readScoreFile(){
-        Log.e("MEMORY : ","FileManagement.ReadScoreFile()");
+        //Log.e("MEMORY : ","FileManagement.ReadScoreFile()");
         ArrayList<Double> result = new ArrayList();
         ArrayList<String> temp = readFile(FScore);
         Toast.makeText(ctx,"NB_ITEM_READ = "+Integer.toString(temp.size()),Toast.LENGTH_SHORT).show();
@@ -117,22 +117,22 @@ public class FileManagement {
                result.add(Double.valueOf(temp.get(i)));
            }
         }catch(NullPointerException e){
-            Log.e("MEMORY : ","FileManagement.ReadScoreFile() : Error while converting str to double : "+temp.get(i)+"\nError = "+e.getMessage());
+            //Log.e("MEMORY : ","FileManagement.ReadScoreFile() : Error while converting str to double : "+temp.get(i)+"\nError = "+e.getMessage());
         }
         return result;
     }
 
     //Read FGamestate
     public Object[] readGameState(){
-        Log.e("MEMORY : ","FileManagement.readGameState()");
+       // Log.e("MEMORY : ","FileManagement.readGameState()");
         Object[] result =  new Object[2];
         ArrayList<String> databrut = readFile(FGameState);
 
-        Log.e("MEMORY : ", "FileManagement.readGameState() : databrut.size() = "+Integer.toString(databrut.size()));
+        //Log.e("MEMORY : ", "FileManagement.readGameState() : databrut.size() = "+Integer.toString(databrut.size()));
 
         if(databrut.size() <= 2) return null;
 
-        Log.e("MEMORY : ", "FileManagement.readGameState() : chargement des données");
+       // Log.e("MEMORY : ", "FileManagement.readGameState() : chargement des données");
 
         result[0] = Integer.parseInt(databrut.get(0).split("=")[1]);
         databrut.remove(0);
@@ -146,7 +146,7 @@ public class FileManagement {
                 mat[i][j] = new Icon(values[0],Integer.parseInt(values[1]),Boolean.valueOf(values[2]),Boolean.valueOf(values[3]),Boolean.valueOf(values[4]));
                 dbg = dbg + "\t" +mat[i][j].getInfos();
             }
-            Log.e("MEMORY : ","FileMangement.readGameSate() : "+dbg);
+            //Log.e("MEMORY : ","FileMangement.readGameSate() : "+dbg);
         }
         result[1] = mat;
         return result;
@@ -155,7 +155,7 @@ public class FileManagement {
     //Save game state in FGamestate
     public int saveGameState(int nb_coup, Icon mat[][]){
         int result = 0;
-        Log.e("MEMORY : ","FileManagement.saveGameState()");
+        //Log.e("MEMORY : ","FileManagement.saveGameState()");
         writeLn(FGameState,"NB_COUP="+Integer.toString(nb_coup),false);
         for(int i = 0; i < mat.length; i++){
             String str = "";
@@ -169,7 +169,7 @@ public class FileManagement {
 
     //Save the app settings
     public int saveAppSettings(String settings){
-        Log.e("MEMORY : ", "FileManagement.saveAppSettings()");
+        //Log.e("MEMORY : ", "FileManagement.saveAppSettings()");
         return writeLn(AppSettings, settings, false);
     }
 

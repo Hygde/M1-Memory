@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,12 +16,11 @@ import android.widget.Toast;
 
 
 public class GameActivity extends AppCompatActivity {
-    private FileManagement FM;
-    private GameSurfaceView gameView;
+    private FileManagement      FM;
+    private GameSurfaceView     gameView;
 
     // Oncreate we directly setup the GameSurfaceView, needed to display the game
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         Intent intent = getIntent();
@@ -36,6 +36,17 @@ public class GameActivity extends AppCompatActivity {
         super.onPause();
         FM = new FileManagement(this);
         FM.saveGameState(5,gameView.truePanel);
+    }
+
+    @Override
+    // On destroying the game, we gather all game data
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Intent intent = new Intent(this, EndgameActivity.class);
+        intent.putExtra("TIME", gameView.getTime());
+        intent.putExtra("NBTRY", gameView.getNbTry());
+        startActivity(intent);
     }
 
     public void debug_toast(String input) {

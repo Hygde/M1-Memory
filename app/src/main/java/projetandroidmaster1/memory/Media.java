@@ -6,6 +6,7 @@ import android.util.Log;
 
 /**
  * Created by Samuel on 20/11/2017.
+ * Class used to play the sound
  */
 
 public class Media extends Thread {
