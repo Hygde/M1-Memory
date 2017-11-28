@@ -44,6 +44,7 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
 
         Intent intent = new Intent(this, EndgameActivity.class);
+        intent.putExtra("WIN", gameView.isWin());
         intent.putExtra("TIME", gameView.getTime());
         intent.putExtra("NBTRY", gameView.getNbTry());
         startActivity(intent);

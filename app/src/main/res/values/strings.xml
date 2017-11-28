@@ -13,6 +13,7 @@
     <string name="ScoreAcitivty_textview_score">List of the 10 best scores</string>
 
     <string name="EndgameActivity_textview_win">You win !</string>
+    <string name="EndgameActivity_textview_lose">You loose...</string>
     <string name="EndgameActivity_textview_time">Time : </string>
-    <string name="EndgameActivity_textview_score">Number of tries : </string>
+    <string name="EndgameActivity_textview_score">Total tries : </string>
 </resources>

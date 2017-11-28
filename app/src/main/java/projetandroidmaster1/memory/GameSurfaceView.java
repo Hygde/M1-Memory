@@ -2,7 +2,6 @@ package projetandroidmaster1.memory;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,11 +12,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
@@ -39,7 +36,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap 		un;
 
     private Bitmap[] 	zone = new Bitmap[4];
-    private Bitmap 		win;
+    //private Bitmap 		win;
 
     // Declaration des objets Ressources et Context permettant d'acc�der aux ressources de notre application et de les charger
     private Resources 	mRes;
@@ -59,13 +56,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     static final int    panelHeight   = 5;
     static final int    panelWidth    = 4;
     static final int    panelSquareSize = 280;
+
+
+
     /** MODEL VARIABLES **/
     private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
-
-
-    private boolean     isTheGameWon        = false;
+    private boolean     win                 = false;
     private int         nbTry               = 0;
     private TimeSpend   time;
+    private int         remainingTime       = 6000;
+    private CountDown   countDown;
     private Icon        firstIconRevealed   = null;    // is one icon already revealed ?
 
 
@@ -113,7 +113,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // prise de focus pour gestion des touches
         setFocusable(true);
     }
-
 
     // initialisation du jeu
     public void initparameters() {
@@ -291,6 +290,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         // When an icon is touched during the game : reveal it
         Canvas c = null;
         if (isTheGameRunning) {
+
+            // Chrono is launch at first try
+            if (nbTry == 0) {
+                time.startChrono();
+                countDown.start();
+            }
+
             int iconPosition[] = getIconPosition(event);
             int x = iconPosition[0];
             int y = iconPosition[1];
@@ -317,12 +323,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     truePanel[y][x].setFound(true);
 
                     // if all icons are found : the game is over
-                    // TODO : replace with if(allFound(truePanel))
-                    if(true) {
-                        time.stopChrono();
-                        Thread.currentThread().interrupt();
-                        cv_thread = null;
-                        ((Activity) mContext).finish();
+                    if(allFound(truePanel)) {
+                        endingGame(true);
                     }
                 }
                 // if not, hiding the icons
@@ -379,7 +381,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         drawHiddenPanel(c);
         debug_truePanelContent();
         time = new TimeSpend(mContext);
-        time.startChrono();
+        countDown = new CountDown(remainingTime);
 
         // MAIN GAME LOOP
         /*while (isTheGameRunning) {
@@ -443,6 +445,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return this.nbTry;
     }
 
+    public boolean isWin() {
+        return this.win;
+    }
+
     private int[] getIconPosition(MotionEvent event){
         int position[] = new int[2];
         int x = (int)event.getX();
@@ -468,13 +474,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return true;
     }
 
-    private void launchEndgame() {
-        Intent intent = new Intent().setClass(mContext, EndgameActivity.class);
-        ((Activity) mContext).startActivity(intent);
-    }
+    private void endingGame(boolean win) {
+        this.win = win;
 
-    private boolean isWon() {
-        return true;
+        time.stopChrono();
+        Thread.currentThread().interrupt();
+        cv_thread = null;
+        ((Activity) mContext).finish();
     }
 
 

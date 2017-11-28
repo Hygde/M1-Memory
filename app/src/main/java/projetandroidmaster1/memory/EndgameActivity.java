@@ -14,8 +14,23 @@ public class EndgameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_endgame);
 
+        TextView textView;
+
+        boolean win = getIntent().getBooleanExtra("WIN", false);
+        textView = findViewById(R.id.textWin);
+        if (win) {
+            textView.setText(R.string.EndgameActivity_textview_win);
+        }
+        else {
+            textView.setText(R.string.EndgameActivity_textview_lose);
+        }
+
         long time = getIntent().getLongExtra("TIME", 0);
-        TextView textView = findViewById(R.id.textValueTime);
+        textView = findViewById(R.id.textValueTime);
         textView.setText(String.valueOf((double)time/1000));
+
+        int tries = getIntent().getIntExtra("NBTRY", 0);
+        textView = findViewById(R.id.textValueScore);
+        textView.setText(String.valueOf(tries));
     }
 }
