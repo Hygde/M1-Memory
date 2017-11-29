@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.Collections;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     /** VIEW VARIABLES **/
+    private Resources 	mRes;
     // Declaration des images
     private Bitmap 		block;
     private Bitmap 		batman;
@@ -33,39 +36,30 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap 		pig;
     private Bitmap 		pinky;
     private Bitmap 		puma;
-    private Bitmap 		un;
 
     private Bitmap[] 	zone = new Bitmap[4];
-    //private Bitmap 		win;
-
-    // Declaration des objets Ressources et Context permettant d'acc�der aux ressources de notre application et de les charger
-    private Resources 	mRes;
-
+    Icon[][] truePanel = new Icon[5][4];                // our reftab used to place the icons.
+    private Bitmap 		un;
     private Context 	mContext;
-    // constantes modelisant les differentes types de cases
     ArrayList<Icon> iconList = new ArrayList<Icon>();
 
-    // tableau de reference du jeu
-    Icon[][] truePanel = new Icon[5][4];                // our reftab used to place the icons.
-
-    //Icon[][] tempPanel = new String[5][4];
-    //boolean[][] discoveredIcons = new boolean[5][4];    // using this table to know if the icons have been discovered
     int panelTopAnchor;
-
     int panelLeftAnchor;
     static final int    panelHeight   = 5;
     static final int    panelWidth    = 4;
+
+
+    /** INTERFACE **/
+    private ProgressBar maxTryBar;
+    private int         maxTryRef;
+    private int         maxTryTemp;
+
+    private TimeSpend   chrono;
+
     static final int    panelSquareSize = 280;
-
-
-
     /** MODEL VARIABLES **/
     private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
     private boolean     win                 = false;
-    private int         nbTry               = 0;
-    private TimeSpend   time;
-    private int         remainingTime       = 6000;
-    private CountDown   countDown;
     private Icon        firstIconRevealed   = null;    // is one icon already revealed ?
 
 
@@ -292,9 +286,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         if (isTheGameRunning) {
 
             // Chrono is launch at first try
-            if (nbTry == 0) {
-                time.startChrono();
-                countDown.start();
+            if (maxTryTemp == maxTryRef) {
+                chrono.startChrono();
             }
 
             int iconPosition[] = getIconPosition(event);
@@ -315,7 +308,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
             // if one icon is already waiting for a match
             else {
-                this.nbTry++;
+                this.maxTryTemp--;
+                maxTryBar.setProgress(maxTryTemp);
 
                 // is it a match ?
                 if (firstIconRevealed.getName() == truePanel[y][x].getName()) {
@@ -327,8 +321,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         endingGame(true);
                     }
                 }
+
                 // if not, hiding the icons
                 else {
+                    if (maxTryTemp == 0) {
+                        endingGame(false);
+                    }
+
                     firstIconRevealed.setRevealed(false);
                     truePanel[y][x].setRevealed(false);
                     try {
@@ -380,8 +379,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         isTheGameRunning = true;
         drawHiddenPanel(c);
         debug_truePanelContent();
-        time = new TimeSpend(mContext);
-        countDown = new CountDown(remainingTime);
 
         // MAIN GAME LOOP
         /*while (isTheGameRunning) {
@@ -437,12 +434,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    public long getTime() {
-        return this.time.getTimeElapse();
-    }
-
     public int getNbTry() {
-        return this.nbTry;
+        return this.maxTryRef - this.maxTryTemp;
     }
 
     public boolean isWin() {
@@ -476,13 +469,19 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     private void endingGame(boolean win) {
         this.win = win;
-
-        time.stopChrono();
         Thread.currentThread().interrupt();
         cv_thread = null;
         ((Activity) mContext).finish();
     }
 
+    public void setMaxTry(ProgressBar bar, int value) {
+        this.maxTryBar = bar;
+        this.maxTryRef = this.maxTryTemp = value;
+    }
+
+    public void setChrono(ProgressBar bar, long time) {
+        chrono = new TimeSpend(bar, time);
+    }
 
     // callback sur le cycle de vie de la surfaceview
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -496,7 +495,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void surfaceDestroyed(SurfaceHolder arg0) {
         Log.i("-> FCT <-", "surfaceDestroyed");
-
     }
 
 
@@ -517,7 +515,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     output+=" -"+ truePanel[i][j].getName()+"- ";
                 }
         }
-        Log.e("MEMORY : ", "GameSurfaceView.debug_panelCOntent():"+output);
+        Log.e("MEMORY : ", "GameSurfaceView.debug_panelContent():"+output);
     }
 
     /** SOKOBAN CODE **/

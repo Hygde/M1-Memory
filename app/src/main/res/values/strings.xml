@@ -7,6 +7,9 @@
     <string name="MainActivity_button_score">Score</string>
     <string name="MainActivity_button_quit">Exit</string>
 
+    <string name="GameSurfaceView_textview_time">Time : </string>
+    <string name="GameSurfaceView_textview_tries">Tries : </string>
+
     <string name="SettingsActivity_textview_sound">Sound</string>
     <string name="SettingsActivity_switch">ON / OFF</string>
 

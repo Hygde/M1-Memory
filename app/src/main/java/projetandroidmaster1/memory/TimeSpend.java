@@ -1,8 +1,9 @@
 package projetandroidmaster1.memory;
 
 import android.content.Context;
-import android.os.SystemClock;
-import android.widget.Chronometer;
+import android.os.CountDownTimer;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 /**
  * Created by Samuel on 20/11/2017.
@@ -10,15 +11,27 @@ import android.widget.Chronometer;
 
 public class TimeSpend{
 
-    private Chronometer chronometer;
+    private final long SEC = 1000;
+    private ProgressBar bar;
+    private long time;
 
-    public TimeSpend(Context ctx){
-        chronometer = new Chronometer(ctx);
-        chronometer.setBase(SystemClock.elapsedRealtime());
+    public TimeSpend(ProgressBar b, long time){
+        bar = b;
+        this.time = time;
     }
 
-    public void startChrono(){chronometer.start();}
-    public void restartChrono(){chronometer.setBase(SystemClock.elapsedRealtime());}
-    public long getTimeElapse(){return SystemClock.elapsedRealtime() - chronometer.getBase();}
-    public void stopChrono(){chronometer.stop();}
+    public void startChrono(){
+        new CountDownTimer(time, SEC) {
+
+            @Override
+            public void onTick(long l) {
+                bar.setProgress((int)l);
+            }
+
+            @Override
+            public void onFinish() {
+                //ce que tu veux faire quand le tps est écoulé
+            }
+        }.start();
+    }
 }

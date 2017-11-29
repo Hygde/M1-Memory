@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <projetandroidmaster1.memory.GameSurfaceView
         android:id="@+id/GameSurfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="383dp"
+        android:layout_height="466dp"
+        android:layout_marginTop="72dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <ProgressBar
+        android:id="@+id/GameSurfaceView_barTry"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="382dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="472dp"
+        android:indeterminate="false"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/GameSurfaceView"
+        tools:layout_editor_absoluteX="1dp" />
+
+    <ProgressBar
+        android:id="@+id/GameSurfaceView_barTime"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="382dp"
+        android:layout_height="19dp"
+        android:layout_marginBottom="500dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/GameSurfaceView"
+        tools:layout_editor_absoluteX="1dp" />
+
+    <TextView
+        android:id="@+id/GameSurfaceView_textTime"
+        android:layout_width="74dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/GameSurfaceView_textview_time"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/GameSurfaceView_textview_time" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:text="@string/GameSurfaceView_textview_tries"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -19,15 +23,37 @@ public class GameActivity extends AppCompatActivity {
     private FileManagement      FM;
     private GameSurfaceView     gameView;
 
+    private ProgressBar         maxTryBar;
+    private int                 maxTryValue = 30;
+
+    private ProgressBar         chronoBar;
+    private TextView            chronoText;
+    private long                time = 10000;
+
     // Oncreate we directly setup the GameSurfaceView, needed to display the game
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-        Intent intent = getIntent();
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        // recuperation de la vue une fois creee à partir de son id
+        setContentView(R.layout.activity_game);
+
+        // Init surface view
         gameView = (GameSurfaceView) findViewById(R.id.GameSurfaceView);
-        // affiche la vue
+
+        // Init maxTry
+        maxTryBar = (ProgressBar) findViewById(R.id.GameSurfaceView_barTry);
+        maxTryBar.setMax(maxTryValue);
+        maxTryBar.setProgress(maxTryValue);
+        gameView.setMaxTry(maxTryBar, maxTryValue);
+
+        // Init chrono
+        chronoText = (TextView) findViewById(R.id.GameSurfaceView_textTime);
+        chronoBar = (ProgressBar) findViewById(R.id.GameSurfaceView_barTime);
+        chronoBar.setMax((int)time);
+        chronoBar.setProgress((int)time);
+        gameView.setChrono(chronoBar, time);
+
         gameView.setVisibility(View.VISIBLE);
     }
 
@@ -45,7 +71,7 @@ public class GameActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, EndgameActivity.class);
         intent.putExtra("WIN", gameView.isWin());
-        intent.putExtra("TIME", gameView.getTime());
+        //intent.putExtra("TIME", gameView.getTime());
         intent.putExtra("NBTRY", gameView.getNbTry());
         startActivity(intent);
     }
