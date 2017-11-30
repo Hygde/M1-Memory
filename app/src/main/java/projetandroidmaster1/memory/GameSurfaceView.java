@@ -55,11 +55,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private int         maxTryTemp;
 
     private TimeSpend   chrono;
+    private boolean isSound;
 
     static final int    panelSquareSize = 280;
     /** MODEL VARIABLES **/
     private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
     private boolean     win                 = false;
+    private static boolean     loose               = false;
     private Icon        firstIconRevealed   = null;    // is one icon already revealed ?
 
 
@@ -281,6 +283,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     // fonction permettant de recuperer les evenements tactiles
     public boolean onTouchEvent (MotionEvent event) {
 
+        if(isSound){
+            Media soundPlayer = new Media(mContext);
+            soundPlayer.start(); //play sound on touch screen
+        }
+        else Log.e("MEMORY : ", "onTouchEvent() : isSound = false");
+
         // When an icon is touched during the game : reveal it
         Canvas c = null;
         if (isTheGameRunning) {
@@ -421,26 +429,38 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     // Filling the truePanel with random icons
     public void setTruePanel() {
-        // we need to duplicate 2 identic lists to represent the pairs
-        ArrayList<Icon> tempIconList = iconList;
-        Collections.shuffle(tempIconList);
 
-        for(int i = 0; i < truePanel.length ; i++) {
-            for(int j = 0; j < truePanel[i].length ; j++) {
-                // the list is shuffled : for each turn, we just treat it as a pile
-                truePanel[i][j] = tempIconList.get(0);
-                tempIconList.remove(0);
+        FileManagement FM = new FileManagement(mContext);
+        Object[] databrut = FM.readGameState();
+        if(databrut != null){//data exist in file
+            //todo : the time spend by the user is  in databrut[0]
+            //todo : the number of try is in databrut[1]
+            truePanel = (Icon[][]) databrut[2];
+        }else {
+            // we need to duplicate 2 identic lists to represent the pairs
+            ArrayList<Icon> tempIconList = iconList;
+            Collections.shuffle(tempIconList);
+
+            for (int i = 0; i < truePanel.length; i++) {
+                for (int j = 0; j < truePanel[i].length; j++) {
+                    // the list is shuffled : for each turn, we just treat it as a pile
+                    truePanel[i][j] = tempIconList.get(0);
+                    tempIconList.remove(0);
+                }
             }
         }
     }
 
+    //setter & getter
     public int getNbTry() {
         return this.maxTryRef - this.maxTryTemp;
     }
-
     public boolean isWin() {
         return this.win;
     }
+    public boolean isLoose(){return loose;}
+    public static void setLoose(){loose = true;}
+    public void setSoundState(boolean sound){isSound = sound;}
 
     private int[] getIconPosition(MotionEvent event){
         int position[] = new int[2];

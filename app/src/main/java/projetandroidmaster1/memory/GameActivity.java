@@ -12,6 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 /**
  * Created by paulv on 14/11/2017.
  * Game activity which launches the view and runs the main thread
@@ -20,6 +22,9 @@ import android.widget.Toast;
 
 
 public class GameActivity extends AppCompatActivity {
+
+    private static final String[] ExistingSettings = {"SOUND"};
+
     private FileManagement      FM;
     private GameSurfaceView     gameView;
 
@@ -55,13 +60,18 @@ public class GameActivity extends AppCompatActivity {
         gameView.setChrono(chronoBar, time);
 
         gameView.setVisibility(View.VISIBLE);
+
+        //File management init
+        FM = new FileManagement(this);
+        readAppSetting();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        FM = new FileManagement(this);
-        FM.saveGameState(5,gameView.truePanel);
+        if(!gameView.isWin() && !gameView.isLoose()) {
+            FM.saveGameState(chronoBar.getProgress(),5, gameView.truePanel);
+        }
     }
 
     @Override
@@ -74,6 +84,11 @@ public class GameActivity extends AppCompatActivity {
         //intent.putExtra("TIME", gameView.getTime());
         intent.putExtra("NBTRY", gameView.getNbTry());
         startActivity(intent);
+    }
+
+    private void readAppSetting(){
+        HashMap<String,String> settings = FM.readAppSettings();
+        gameView.setSoundState(Boolean.parseBoolean(settings.get(ExistingSettings[0])));
     }
 
     public void debug_toast(String input) {

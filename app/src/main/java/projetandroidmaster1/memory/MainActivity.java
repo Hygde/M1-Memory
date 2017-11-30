@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
+        Log.e("MEMORY : ","MainActivity.onPostResume()");
         Button btn = (Button)findViewById(R.id.MainActivity_button_play);
         if(FM.readGameState()!=null)btn.setText(R.string.MainActivity_button_continue);
         else btn.setText(R.string.MainActivity_button_play);
