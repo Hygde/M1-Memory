@@ -32,7 +32,9 @@ public class TimeSpend{
 
             @Override
             public void onFinish() {
-                //ce que tu veux faire quand le tps est écoulé
+                bar.setProgress(0);
+                //todo : call function to end the game
+                GameSurfaceView.setLoose();
             }
         }.start();
     }

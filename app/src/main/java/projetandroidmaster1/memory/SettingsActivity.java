@@ -43,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     //initialize all the view with parameter of the file
     private void initView(){
-        HashMap<String,String>config = FM.readAppSettings(ExistingSettings);
+        HashMap<String,String>config = FM.readAppSettings();
         if(config.size() > 0){
             Sound.setChecked(Boolean.valueOf(config.get(ExistingSettings[0])));
         }
