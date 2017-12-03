@@ -14,6 +14,7 @@ public class TimeSpend{
     private final long SEC = 1000;
     private ProgressBar bar;
     private long time;
+    private long currentTime;
 
     public TimeSpend(ProgressBar b, long time){
         bar = b;
@@ -25,6 +26,7 @@ public class TimeSpend{
 
             @Override
             public void onTick(long l) {
+                currentTime = l;
                 bar.setProgress((int)l);
             }
 
@@ -33,5 +35,8 @@ public class TimeSpend{
                 //ce que tu veux faire quand le tps est écoulé
             }
         }.start();
+    }
+    public long getRemainingTime() {
+        return this.currentTime;
     }
 }

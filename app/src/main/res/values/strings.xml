@@ -17,6 +17,6 @@
 
     <string name="EndgameActivity_textview_win">You win !</string>
     <string name="EndgameActivity_textview_lose">You loose...</string>
-    <string name="EndgameActivity_textview_time">Time : </string>
-    <string name="EndgameActivity_textview_score">Total tries : </string>
+    <string name="EndgameActivity_textview_time">Remaining time : </string>
+    <string name="EndgameActivity_textview_score">Remaining tries : </string>
 </resources>

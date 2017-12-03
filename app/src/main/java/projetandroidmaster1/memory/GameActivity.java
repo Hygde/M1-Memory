@@ -71,8 +71,8 @@ public class GameActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, EndgameActivity.class);
         intent.putExtra("WIN", gameView.isWin());
-        //intent.putExtra("TIME", gameView.getTime());
-        intent.putExtra("NBTRY", gameView.getNbTry());
+        //intent.putExtra("REMAINING_TIME", gameView.getTime());
+        intent.putExtra("REMAINING_TRIES", gameView.getRemainingTries());
         startActivity(intent);
     }
 

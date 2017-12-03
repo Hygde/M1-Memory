@@ -38,10 +38,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap 		puma;
 
     private Bitmap[] 	zone = new Bitmap[4];
-    Icon[][] truePanel = new Icon[5][4];                // our reftab used to place the icons.
+    Icon[][]            truePanel = new Icon[5][4];                // our reftab used to place the icons.
     private Bitmap 		un;
     private Context 	mContext;
-    ArrayList<Icon> iconList = new ArrayList<Icon>();
+    ArrayList<Icon>     iconList = new ArrayList<Icon>();
 
     int panelTopAnchor;
     int panelLeftAnchor;
@@ -53,10 +53,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private ProgressBar maxTryBar;
     private int         maxTryRef;
     private int         maxTryTemp;
-
     private TimeSpend   chrono;
-
     static final int    panelSquareSize = 280;
+
     /** MODEL VARIABLES **/
     private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
     private boolean     win                 = false;
@@ -434,10 +433,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    public int getNbTry() {
-        return this.maxTryRef - this.maxTryTemp;
-    }
-
     public boolean isWin() {
         return this.win;
     }
@@ -472,6 +467,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Thread.currentThread().interrupt();
         cv_thread = null;
         ((Activity) mContext).finish();
+    }
+
+    public int getRemainingTries() {
+        return this.maxTryTemp;
     }
 
     public void setMaxTry(ProgressBar bar, int value) {
