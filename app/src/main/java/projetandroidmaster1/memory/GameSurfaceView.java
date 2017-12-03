@@ -54,14 +54,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private int         maxTryRef;
     private int         maxTryTemp;
     private TimeSpend   chrono;
-    private boolean isSound;
+    private boolean     isSound;
 
     static final int    panelSquareSize = 280;
 
     /** MODEL VARIABLES **/
     private boolean     isTheGameRunning    = false;    // Is the player allowed to make interactions with the interface ?
+    private boolean     isTheGameFinished   = false;
     private boolean     win                 = false;
-    private static boolean     loose               = false;
+    private static boolean     loose        = false;
     private Icon        firstIconRevealed   = null;    // is one icon already revealed ?
 
 
@@ -287,7 +288,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             Media soundPlayer = new Media(mContext);
             soundPlayer.start(); //play sound on touch screen
         }
-        else Log.e("MEMORY : ", "onTouchEvent() : isSound = false");
+        //else Log.e("MEMORY : ", "onTouchEvent() : isSound = false");
 
         // When an icon is touched during the game : reveal it
         Canvas c = null;
@@ -316,8 +317,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
             // if one icon is already waiting for a match
             else {
-                this.maxTryTemp--;
-                maxTryBar.setProgress(maxTryTemp);
 
                 // is it a match ?
                 if (firstIconRevealed.getName() == truePanel[y][x].getName()) {
@@ -330,8 +329,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     }
                 }
 
-                // if not, hiding the icons
+                // if not lose a try, hiding the icons
                 else {
+                    this.maxTryTemp--;
+                    maxTryBar.setProgress(maxTryTemp);
+
                     if (maxTryTemp == 0) {
                         endingGame(false);
                     }
@@ -369,7 +371,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void run() {
 
         Canvas c = null;
-
         // The truePanel is revealed during 5 seconds, then the images hide
         try {
             try {
@@ -389,18 +390,19 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         debug_truePanelContent();
 
         // MAIN GAME LOOP
-        /*while (isTheGameRunning) {
+        while (isTheGameRunning) {
+            if (chrono.isEnd()) {
+                endingGame(false);
+            }
             try {
-                // PAUSE
-                //cv_thread.sleep(40); // on doit endormir le thread pour limiter le nombre d'images par seconde
-                //currentStepZone = (currentStepZone + 1) % maxStepZone;
+                cv_thread.sleep(1000);
             } catch(Exception e) {
                 // ERREUR
                 // on entre dans le catch quand la boucle tente d'endormir le thread principal : l'erreur s'affiche puisqu'il n'existe plus. Solution : sortir de la boucle
                 //Log.e("-> RUN <-", "PB DANS RUN");
                 break;
             }
-        }*/
+        }
     }
 
     // filling the iconList with all the names
@@ -432,11 +434,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         FileManagement FM = new FileManagement(mContext);
         Object[] databrut = FM.readGameState();
-        if(databrut != null){//data exist in file
+        /*if(databrut != null){//data exist in file
             //todo : the time spend by the user is  in databrut[0]
             //todo : the number of try is in databrut[1]
             truePanel = (Icon[][]) databrut[2];
-        }else {
+        }else {*/
             // we need to duplicate 2 identic lists to represent the pairs
             ArrayList<Icon> tempIconList = iconList;
             Collections.shuffle(tempIconList);
@@ -448,19 +450,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     tempIconList.remove(0);
                 }
             }
-        }
+        //}
     }
-
-    public int getNbTry() {
-        return this.maxTryRef - this.maxTryTemp;
-    }
-
-    public boolean isWin() {
-        return this.win;
-    }
-    public boolean isLoose(){return loose;}
-    public static void setLoose(){loose = true;}
-    public void setSoundState(boolean sound){isSound = sound;}
 
     private int[] getIconPosition(MotionEvent event){
         int position[] = new int[2];
@@ -473,7 +464,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             position[0] = (x/panelSquareSize) - (panelLeftAnchor/panelSquareSize);
             position[1] = (y/panelSquareSize) - (panelTopAnchor/panelSquareSize);
         }
-        Log.i("====> Position :", "x= "+Integer.toString(position[0])+" y= "+Integer.toString(position[1]));
+        //Log.i("====> Position :", "x= "+Integer.toString(position[0])+" y= "+Integer.toString(position[1]));
         return position;
     }
 
@@ -487,7 +478,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         return true;
     }
 
-    private void endingGame(boolean win) {
+    public void endingGame(boolean win) {
+        this.isTheGameFinished = true;
         this.win = win;
         Thread.currentThread().interrupt();
         cv_thread = null;
@@ -501,6 +493,22 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void setMaxTry(ProgressBar bar, int value) {
         this.maxTryBar = bar;
         this.maxTryRef = this.maxTryTemp = value;
+    }
+
+    public int getNbTry() {
+        return this.maxTryRef - this.maxTryTemp;
+    }
+
+    public boolean isTheGameFinished() { return this.isTheGameFinished;}
+    public boolean isWin() {
+        return this.win;
+    }
+    public boolean isLoose(){return loose;}
+    public static void setLoose(){loose = true;}
+    public void setSoundState(boolean sound){isSound = sound;}
+
+    public long getTime() {
+        return chrono.getRemainingTime();
     }
 
     public void setChrono(ProgressBar bar, long time) {

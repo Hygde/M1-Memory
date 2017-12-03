@@ -29,7 +29,7 @@ public class GameActivity extends AppCompatActivity {
     private GameSurfaceView     gameView;
 
     private ProgressBar         maxTryBar;
-    private int                 maxTryValue = 30;
+    private int                 maxTryValue = 3;
 
     private ProgressBar         chronoBar;
     private TextView            chronoText;
@@ -79,11 +79,13 @@ public class GameActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        Intent intent = new Intent(this, EndgameActivity.class);
-        intent.putExtra("WIN", gameView.isWin());
-        //intent.putExtra("REMAINING_TIME", gameView.getTime());
-        intent.putExtra("REMAINING_TRIES", gameView.getRemainingTries());
-        startActivity(intent);
+        if (gameView.isTheGameFinished()) {
+            Intent intent = new Intent(this, EndgameActivity.class);
+            intent.putExtra("WIN", gameView.isWin());
+            intent.putExtra("REMAINING_TIME", gameView.getTime());
+            intent.putExtra("REMAINING_TRIES", gameView.getRemainingTries());
+            startActivity(intent);
+        }
     }
 
     private void readAppSetting(){
