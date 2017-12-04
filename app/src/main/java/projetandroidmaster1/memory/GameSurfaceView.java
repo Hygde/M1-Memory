@@ -23,7 +23,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     /** VIEW VARIABLES **/
     private Resources 	mRes;
-    // Declaration des images
     private Bitmap 		block;
     private Bitmap 		batman;
     private Bitmap 		firefox;
@@ -63,13 +62,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private boolean     win                 = false;
     private static boolean     loose               = false;
     private Icon        firstIconRevealed   = null;    // is one icon already revealed ?
-
-
-    // thread utilisé pour animer les zones de depot des diamants
     private     boolean in      = true;
+
     private     Thread  cv_thread;
     SurfaceHolder holder;
-
     Paint paint;
 
     /**

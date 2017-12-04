@@ -27,7 +27,7 @@ public class EndgameActivity extends AppCompatActivity {
 
         long time = getIntent().getLongExtra("TIME", 0);
         textView = findViewById(R.id.textValueTime);
-        textView.setText(String.valueOf((double)time/1000));
+        textView.setText(String.valueOf((double)time/100));
 
         int tries = getIntent().getIntExtra("NBTRY", 0);
         textView = findViewById(R.id.textValueScore);

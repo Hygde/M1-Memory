@@ -20,7 +20,6 @@ import java.util.HashMap;
  */
 
 
-
 public class GameActivity extends AppCompatActivity {
 
     private static final String[] ExistingSettings = {"SOUND"};
