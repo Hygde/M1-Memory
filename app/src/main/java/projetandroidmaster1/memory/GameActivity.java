@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,7 +33,7 @@ public class GameActivity extends AppCompatActivity {
 
     private ProgressBar         chronoBar;
     private TextView            chronoText;
-    private long                time = 60000;
+    private long                time = 6000;
 
     // Oncreate we directly setup the GameSurfaceView, needed to display the game
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,7 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
 
         if (gameView.isTheGameFinished()) {
+            Log.e("TIME", ""+gameView.getTime());
             double score = calculateScore();
             if (score > 0) {
                 fM.saveScore(score);

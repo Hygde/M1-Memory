@@ -37,6 +37,5 @@ public class EndgameActivity extends AppCompatActivity {
         textView = findViewById(R.id.textValueScore);
         textView.setText(String.valueOf(score));
 
-
     }
 }

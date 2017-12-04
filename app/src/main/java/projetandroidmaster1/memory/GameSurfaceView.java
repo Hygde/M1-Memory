@@ -294,8 +294,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             int x = iconPosition[0];
             int y = iconPosition[1];
             if (y > 4) y = 4;
-            //String icon = truePanel[y][x];
-            //tempPanel[y][x] = icon;
+
+            if (truePanel[y][x].isDiscovered()) {
+                return false;
+            }
 
             // In every case, revealing the icon
             truePanel[y][x].setDiscovered(true);
@@ -539,60 +541,5 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
         Log.e("MEMORY : ", "GameSurfaceView.debug_panelContent():"+output);
     }
-
-    /** SOKOBAN CODE **/
-    // verification que nous sommes dans le tableau
-    /*private boolean _IsOut(int x, int y) {
-        if ((x < 0) || (x > carteWidth- 1)) {
-            return true;
-        }
-        if ((y < 0) || (y > carteHeight- 1)) {
-            return true;
-        }
-        return false;
-    }*/
-
-    //controle de la valeur d'une cellule
-    /*private boolean IsCell(int x, int y, int mask) {
-        if (carte[y][x] == mask) {
-            return true;
-        }
-        return false;
-    }*/
-    /*public boolean isWinBitmapTouched(MotionEvent event) {
-        // Launching the second level when touching the "win" Bitmap
-        if (event.getAction() == MotionEvent.ACTION_DOWN){
-            float x = event.getX();
-            float y = event.getY();
-            int carteLeftBoard = carteLeftAnchor + 3*carteTileSize;
-            int carteRightBoard = carteLeftAnchor + 3*carteTileSize + 80;
-            int carteBottomBoard = carteTopAnchor + 4 * carteTileSize;
-            int carteTopBoard = carteTopAnchor + 4 * carteTileSize + 40;
-
-            if((x >= carteLeftBoard && x <= carteRightBoard) && (y >= carteBottomBoard && y <= carteTopBoard)) {
-                return true;
-            }
-            //Log.i("=== TESTY TOUCH", "Touch coordinates : " +
-            //      String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
-        }
-        return false;
-    }*/
-
-    /*public void setLevel2() {
-        refdiamants[0] = new int[]{3, 5};
-        refdiamants[1] = new int[]{6, 6};
-        refdiamants[2] = new int[]{4, 5};
-        refdiamants[3] = new int[]{3, 7};
-    }*/
-
-    // Fills the temporary panel with hidden_undiscovered icons
-    /*public void setTempPanel() {
-        for(int i = 0; i < tempPanel.length ; i++) {
-            for(int j = 0; j < tempPanel[i].length ; j++) {
-                tempPanel[i][j] = "hidden_undiscovered";
-            }
-        }
-        //debug_tempPanel();
-    }*/
 
 }

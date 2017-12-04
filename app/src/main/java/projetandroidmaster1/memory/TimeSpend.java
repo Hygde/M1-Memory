@@ -1,11 +1,9 @@
 package projetandroidmaster1.memory;
 
-import android.content.Context;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /**
  * Created by Samuel on 20/11/2017.
@@ -39,11 +37,13 @@ public class TimeSpend{
                         bar.setProgress((int)temp);
                     }
                 });
-
+                currentTime = l;
             }
 
             @Override
             public void onFinish() {
+                currentTime = 0;
+                end = true;
                 Handler UIHandler = new Handler(Looper.getMainLooper());
                 UIHandler.post(new Runnable() {
                     @Override
@@ -51,8 +51,6 @@ public class TimeSpend{
                         bar.setProgress(0);
                     }
                 });
-                currentTime = 0;
-                end = true;
                 GameSurfaceView.setLoose();
             }
         }.start();
@@ -62,5 +60,4 @@ public class TimeSpend{
     }
     public boolean isStart() { return this.start; }
     public boolean isEnd() { return this.end; }
-    public void setCurrentTime(long c) { this.currentTime = c; }
 }
