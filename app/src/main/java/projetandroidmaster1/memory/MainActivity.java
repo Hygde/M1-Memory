@@ -41,10 +41,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        Log.e("MEMORY : ","MainActivity.onPostResume()");
-        Button btn = (Button)findViewById(R.id.MainActivity_button_play);
-        if(FM.readGameState()!=null)btn.setText(R.string.MainActivity_button_continue);
-        else btn.setText(R.string.MainActivity_button_play);
+        //Log.e("MEMORY : ","MainActivity.onPostResume()");
+        //Button btn = (Button)findViewById(R.id.MainActivity_button_play);
+        //if(FM.readGameState()!=null)btn.setText(R.string.MainActivity_button_continue);
+        //btn.setText(R.string.MainActivity_button_play);
+
+        Button btn = (Button)findViewById(R.id.MainActivity_button_continue);
+
     }
 
     @Override
@@ -60,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
     // Called when the player taps the Play button
     public void launchGameActivity(View view) {
         Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("CONTINUE", false);
+        startActivity(intent);
+    }
+
+    public void continueGameActivity(View view) {
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("CONTINUE", true);
         startActivity(intent);
     }
 

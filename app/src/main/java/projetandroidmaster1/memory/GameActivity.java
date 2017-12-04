@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,18 +23,22 @@ public class GameActivity extends AppCompatActivity {
 
     private static final String[] ExistingSettings = {"SOUND"};
 
-    private FileManagement      FM;
+    private FileManagement      fM;
     private GameSurfaceView     gameView;
+    private boolean             continueGame;
 
     private ProgressBar         maxTryBar;
-    private int                 maxTryValue = 3;
+    private int                 maxTryValue = 30;
 
     private ProgressBar         chronoBar;
     private TextView            chronoText;
-    private long                time = 10000;
+    private long                time = 60000;
 
     // Oncreate we directly setup the GameSurfaceView, needed to display the game
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = getIntent();
+        continueGame = intent.getBooleanExtra("CONTINUE", false);
+
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -61,7 +64,7 @@ public class GameActivity extends AppCompatActivity {
         gameView.setVisibility(View.VISIBLE);
 
         //File management init
-        FM = new FileManagement(this);
+        fM = new FileManagement(this);
         readAppSetting();
     }
 
@@ -69,7 +72,10 @@ public class GameActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if(!gameView.isWin() && !gameView.isLoose()) {
-            FM.saveGameState(chronoBar.getProgress(),5, gameView.truePanel);
+            fM.saveGameState(chronoBar.getProgress(), gameView.getRemainingTries(), gameView.truePanel);
+        }
+        if (gameView.isLoose()) {
+            fM.saveGameState(0, 0, new Icon[0][0]);
         }
     }
 
@@ -79,17 +85,30 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
 
         if (gameView.isTheGameFinished()) {
+            double score = calculateScore();
+            if (score > 0) {
+                fM.saveScore(score);
+            }
             Intent intent = new Intent(this, EndgameActivity.class);
             intent.putExtra("WIN", gameView.isWin());
             intent.putExtra("REMAINING_TIME", gameView.getTime());
             intent.putExtra("REMAINING_TRIES", gameView.getRemainingTries());
+            intent.putExtra("SCORE", score);
             startActivity(intent);
         }
     }
 
+    public double calculateScore() {
+        return (double)gameView.getRemainingTries()*(double)gameView.getTime()/1000;
+    }
+
     private void readAppSetting(){
-        HashMap<String,String> settings = FM.readAppSettings();
+        HashMap<String,String> settings = fM.readAppSettings();
         gameView.setSoundState(Boolean.parseBoolean(settings.get(ExistingSettings[0])));
+    }
+
+    public boolean isContinueGame() {
+        return continueGame;
     }
 
     public void debug_toast(String input) {

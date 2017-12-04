@@ -110,10 +110,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     // initialisation du jeu
     public void initparameters() {
         paint = new Paint();
-        paint.setColor(0xff0000);
+        paint.setColor(0xffffff);
 
         paint.setDither(true);
-        paint.setColor(0xFFFFFF00);
+        paint.setColor(0xffffff);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
@@ -132,11 +132,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             cv_thread.start();
             Log.e("-FCT-", "cv_thread.start()");
         }
-    }
-
-    // dessin du gagne si gagn�
-    private void paintwin(Canvas canvas) {
-        //canvas.drawBitmap(win, carteLeftAnchor+ 3*carteTileSize, carteTopAnchor+ 4*carteTileSize, null);
     }
 
     // Drawing the Panel
@@ -383,7 +378,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         isTheGameRunning = true;
         drawHiddenPanel(c);
-        debug_truePanelContent();
 
         // MAIN GAME LOOP
         while (isTheGameRunning) {

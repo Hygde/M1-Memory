@@ -2,6 +2,8 @@ package projetandroidmaster1.memory;
 
 import android.content.Context;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,15 +31,28 @@ public class TimeSpend{
 
             @Override
             public void onTick(long l) {
-                currentTime = l;
-                bar.setProgress((int)l);
+                final long temp = l;
+                Handler UIHandler = new Handler(Looper.getMainLooper());
+                UIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress((int)temp);
+                    }
+                });
+
             }
 
             @Override
             public void onFinish() {
-                bar.setProgress(0);
+                Handler UIHandler = new Handler(Looper.getMainLooper());
+                UIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        bar.setProgress(0);
+                    }
+                });
+                currentTime = 0;
                 end = true;
-                //todo : call function to end the game
                 GameSurfaceView.setLoose();
             }
         }.start();
@@ -47,4 +62,5 @@ public class TimeSpend{
     }
     public boolean isStart() { return this.start; }
     public boolean isEnd() { return this.end; }
+    public void setCurrentTime(long c) { this.currentTime = c; }
 }
