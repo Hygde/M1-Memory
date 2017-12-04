@@ -25,11 +25,11 @@ public class EndgameActivity extends AppCompatActivity {
             textView.setText(R.string.EndgameActivity_textview_lose);
         }
 
-        long time = getIntent().getLongExtra("TIME", 0);
+        long time = getIntent().getLongExtra("REMAINING_TIME", 0);
         textView = findViewById(R.id.textValueTime);
         textView.setText(String.valueOf((double)time/100));
 
-        int tries = getIntent().getIntExtra("NBTRY", 0);
+        int tries = getIntent().getIntExtra("REMAINING_TRIES", 0);
         textView = findViewById(R.id.textValueScore);
         textView.setText(String.valueOf(tries));
     }
