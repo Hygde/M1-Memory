@@ -85,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void aboutActivity(View view) {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+    }
+
     //called when the player taps the quit button
     public void quitGame(View view) {
         finish();

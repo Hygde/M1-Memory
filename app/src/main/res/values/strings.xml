@@ -5,6 +5,7 @@
     <string name="MainActivity_button_continue">Continue</string>
     <string name="MainActivity_button_setting">Settings</string>
     <string name="MainActivity_button_score">Score</string>
+    <string name="MainActivity_button_about">About</string>
     <string name="MainActivity_button_quit">Exit</string>
 
     <string name="GameSurfaceView_textview_time">Time : </string>
@@ -14,6 +15,8 @@
     <string name="SettingsActivity_switch">ON / OFF</string>
 
     <string name="ScoreAcitivty_textview_score">List of the 10 best scores</string>
+
+    <string name="AboutActivity_textview_content">Samuel de Vals / Paul Vialart 2017</string>
 
     <string name="EndgameActivity_textview_win">You win !</string>
     <string name="EndgameActivity_textview_lose">You loose...</string>
