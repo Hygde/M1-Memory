@@ -40,13 +40,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPostResume() {
+
         super.onPostResume();
+        Button btn = (Button)findViewById(R.id.MainActivity_button_continue);
+        if(FM.readGameState()!=null) {
+            btn.setEnabled(true);
+        }
+        else btn.setEnabled(false);
+
         //Log.e("MEMORY : ","MainActivity.onPostResume()");
         //Button btn = (Button)findViewById(R.id.MainActivity_button_play);
         //if(FM.readGameState()!=null)btn.setText(R.string.MainActivity_button_continue);
         //btn.setText(R.string.MainActivity_button_play);
 
-        Button btn = (Button)findViewById(R.id.MainActivity_button_continue);
+        Button btnc = (Button)findViewById(R.id.MainActivity_button_continue);
 
     }
 

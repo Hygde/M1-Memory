@@ -48,6 +48,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     static final int    panelWidth    = 4;
 
 
+    public boolean isContinue = false;
+
+
     /** INTERFACE **/
     private ProgressBar maxTryBar;
     private int         maxTryRef;
@@ -381,13 +384,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     // Filling the truePanel with random icons
     public void setTruePanel() {
 
+        // CONTINUE ?
         FileManagement FM = new FileManagement(mContext);
         Object[] databrut = FM.readGameState();
-        /*if(databrut != null){//data exist in file
+        if(isContinue){//data exist in file
             //todo : the time spend by the user is  in databrut[0]
             //todo : the number of try is in databrut[1]
             truePanel = (Icon[][]) databrut[2];
-        }else {*/
+        }else {
             // we need to duplicate 2 identic lists to represent the pairs
             ArrayList<Icon> tempIconList = iconList;
             Collections.shuffle(tempIconList);
@@ -399,7 +403,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     tempIconList.remove(0);
                 }
             }
-        //}
+        }
     }
 
     private int[] getIconPosition(MotionEvent event){

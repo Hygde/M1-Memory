@@ -62,6 +62,10 @@ public class GameActivity extends AppCompatActivity {
         chronoBar.setProgress((int)time);
         gameView.setChrono(chronoBar, time);
 
+        if (continueGame) {
+            gameView.isContinue = true;
+        }
+
         gameView.setVisibility(View.VISIBLE);
 
         //File management init
