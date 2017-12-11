@@ -33,7 +33,7 @@ public class GameActivity extends AppCompatActivity {
 
     private ProgressBar         chronoBar;
     private TextView            chronoText;
-    private long                time = 6000;
+    private long                time = 60000;
 
     // Oncreate we directly setup the GameSurfaceView, needed to display the game
     protected void onCreate(Bundle savedInstanceState) {

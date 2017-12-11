@@ -252,7 +252,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             int y = iconPosition[1];
             if (y > 4) y = 4;
 
-            if (truePanel[y][x].isDiscovered()) {
+            if (truePanel[y][x].isRevealed()) {
                 return false;
             }
 
@@ -457,6 +457,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void setSoundState(boolean sound){isSound = sound;}
 
     public long getTime() {
+        if (chrono.isEnd()) return 0;
         return chrono.getRemainingTime();
     }
 
